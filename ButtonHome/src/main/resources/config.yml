@@ -2,6 +2,9 @@
 # ButtonHome Configuration File
 # ==========================================
 
+# Menu display mode: "GUI" for Chest Inventory buttons or "CHAT" for Chat MiniMessage buttons
+menu-mode: GUI
+
 # Home limit for players without a specific permission node (buttonhome.limit.<n>)
 default-max-homes: 2
 

@@ -38,13 +38,18 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        // Check menu mode configuration (GUI or CHAT)
+        String mode = plugin.getConfig().getString("menu-mode", "GUI");
+
         // Check if the command is /homes
         if (command.getName().equalsIgnoreCase("homes")) {
             if (args.length > 0 && args[0].equalsIgnoreCase("plain")) {
                 showPlainHomesList(player, uuid, homeManager);
-            } else {
+            } else if (mode.equalsIgnoreCase("CHAT")) {
                 List<HomeManager.Home> homes = homeManager.getHomes(uuid);
-                renderStage1Menu(player, homes, true); // true for expanded grid (up to 50 slots)
+                renderStage1Menu(player, homes, true); // true for expanded grid
+            } else {
+                plugin.getGuiManager().openGridGui(player, true);
             }
             return true;
         }
@@ -59,13 +64,21 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
             }
 
             // Trigger Stage 2 directly
-            showStage2Menu(player, home);
+            if (mode.equalsIgnoreCase("CHAT")) {
+                showStage2Menu(player, home);
+            } else {
+                plugin.getGuiManager().openStage2Gui(player, home);
+            }
             return true;
         }
 
         // /home with no arguments (Stage 1 compact menu)
-        List<HomeManager.Home> homes = homeManager.getHomes(uuid);
-        renderStage1Menu(player, homes, false); // false for compact grid
+        if (mode.equalsIgnoreCase("CHAT")) {
+            List<HomeManager.Home> homes = homeManager.getHomes(uuid);
+            renderStage1Menu(player, homes, false); // false for compact grid
+        } else {
+            plugin.getGuiManager().openGridGui(player, false);
+        }
         return true;
     }
 

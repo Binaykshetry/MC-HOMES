@@ -78,6 +78,12 @@ public class InternalCommands implements CommandExecutor, TabCompleter {
             return;
         }
 
+        String mode = plugin.getConfig().getString("menu-mode", "GUI");
+        if (!mode.equalsIgnoreCase("CHAT")) {
+            plugin.getGuiManager().openStage2Gui(player, home);
+            return;
+        }
+
         // Render Stage 2 (teleport/delete buttons)
         player.sendMessage(plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-title")
                 .replace("%home%", home.getName()), null));
@@ -98,6 +104,12 @@ public class InternalCommands implements CommandExecutor, TabCompleter {
         }
 
         String homeName = args[0];
+
+        String mode = plugin.getConfig().getString("menu-mode", "GUI");
+        if (!mode.equalsIgnoreCase("CHAT")) {
+            plugin.getGuiManager().openStage3Gui(player, homeName);
+            return;
+        }
 
         // Render Stage 3 (sethome/cancel buttons)
         player.sendMessage(plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage3-title")
