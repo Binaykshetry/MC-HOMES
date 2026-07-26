@@ -3,6 +3,7 @@ package com.buttonhome.command;
 import com.buttonhome.ButtonHome;
 import com.buttonhome.manager.HomeManager;
 import com.buttonhome.manager.TeleportManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -82,12 +83,12 @@ public class InternalCommands implements CommandExecutor, TabCompleter {
                 .replace("%home%", home.getName()), null));
         player.sendMessage(plugin.parseMiniMessage(plugin.getFormattedMessage("messages.menu-divider"), null));
 
-        org.bukkit.Component tpBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-teleport-btn")
+        Component tpBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-teleport-btn")
                 .replace("%home%", home.getName()), null);
-        org.bukkit.Component deleteBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-delete-btn")
+        Component deleteBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-delete-btn")
                 .replace("%home%", home.getName()), null);
 
-        player.sendMessage(tpBtn.append(org.bukkit.Component.text("   ")).append(deleteBtn));
+        player.sendMessage(tpBtn.append(Component.text("   ")).append(deleteBtn));
     }
 
     private void handleHomeSetPrompt(Player player, UUID uuid, String[] args) {
@@ -103,12 +104,12 @@ public class InternalCommands implements CommandExecutor, TabCompleter {
                 .replace("%home%", homeName), null));
         player.sendMessage(plugin.parseMiniMessage(plugin.getFormattedMessage("messages.menu-divider"), null));
 
-        org.bukkit.Component setBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage3-sethome-btn")
+        Component setBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage3-sethome-btn")
                 .replace("%home%", homeName), null);
-        org.bukkit.Component cancelBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage3-cancel-btn")
+        Component cancelBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage3-cancel-btn")
                 .replace("%home%", homeName), null);
 
-        player.sendMessage(setBtn.append(org.bukkit.Component.text("   ")).append(cancelBtn));
+        player.sendMessage(setBtn.append(Component.text("   ")).append(cancelBtn));
     }
 
     private void handleHomeTp(Player player, UUID uuid, String[] args) {
