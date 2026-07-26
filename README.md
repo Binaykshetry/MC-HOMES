@@ -1,20 +1,25 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# ButtonHome Paper Plugin Source 📦
 
-# Run and deploy your AI Studio app
+This directory contains the Java source code for the **ButtonHome** Paper Minecraft plugin (Paper 1.21.x – 26.1.2x).
 
-This contains everything you need to run your app locally.
+## 🛠️ Requirements
 
-View your app in AI Studio: https://ai.studio/apps/5b0d621e-ac5b-4fba-82aa-5fe95a5e91e3
+- **Java Development Kit (JDK)**: 21 or higher
+- **Build Tool**: Apache Maven 3.8+
+- **Target Server Platform**: Paper / Purpur / Folia (1.21.x – 26.1.2x)
 
-## Run Locally
+## 🚀 Building the `.jar`
 
-**Prerequisites:**  Node.js
+Run the following command from this directory:
 
+```bash
+mvn clean package
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+The output plugin `.jar` will be generated in:
+
+```
+target/ButtonHome-1.0.0.jar
+```
+
+Place `ButtonHome-1.0.0.jar` into your Minecraft server's `plugins/` directory and restart or reload the server.
