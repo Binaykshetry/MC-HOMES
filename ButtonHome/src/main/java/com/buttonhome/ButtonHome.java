@@ -20,7 +20,6 @@ public final class ButtonHome extends JavaPlugin {
 
     private HomeManager homeManager;
     private TeleportManager teleportManager;
-    private com.buttonhome.manager.GuiManager guiManager;
 
     @Override
     public void onEnable() {
@@ -30,7 +29,6 @@ public final class ButtonHome extends JavaPlugin {
         // 2. Initialize Managers
         this.homeManager = new HomeManager(this);
         this.teleportManager = new TeleportManager(this);
-        this.guiManager = new com.buttonhome.manager.GuiManager(this);
 
         // 3. Register Listener
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -74,10 +72,6 @@ public final class ButtonHome extends JavaPlugin {
 
     public TeleportManager getTeleportManager() {
         return teleportManager;
-    }
-
-    public com.buttonhome.manager.GuiManager getGuiManager() {
-        return guiManager;
     }
 
     /**
