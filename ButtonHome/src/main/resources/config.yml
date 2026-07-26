@@ -1,0 +1,65 @@
+# ==========================================
+# ButtonHome Configuration File
+# ==========================================
+
+# Home limit for players without a specific permission node (buttonhome.limit.<n>)
+default-max-homes: 2
+
+# Warmup time (seconds) standing still before teleporting. Set to 0 for instant teleport.
+warmup-seconds: 5
+
+# Cancel teleport if the player moves from their block position
+cancel-on-move: true
+
+# Cancel teleport if the player takes damage
+cancel-on-damage: true
+
+# Cooldown (seconds) between successful teleports. Set to 0 for no cooldown.
+teleport-cooldown-seconds: 0
+
+# Player-facing messages (formatted with MiniMessage)
+messages:
+  # General error messages
+  no-permission: "<red>You do not have permission to use this command!</red>"
+  player-only: "<red>Only players can use this command!</red>"
+  invalid-name: "<red>Invalid home name! Names must be 1-16 characters long and use only letters, numbers, hyphens, and underscores (e.g. [A-Za-z0-9_-]).</red>"
+  no-such-home: "<red>You don't have a home named <yellow>%home%</yellow>.</red>"
+  usage-hint: "<gray>Usage: %usage%</gray>"
+  
+  # Home operations messages
+  home-set: "<green>Home <white>%home%</white> has been set at your current location!</green>"
+  home-deleted: "<red>Home <white>%home%</white> has been deleted.</red>"
+  home-already-exists: "<red>A home named <yellow>%home%</yellow> already exists!</red>"
+  limit-reached: "<red>You have reached your home limit of <yellow>%limit%</yellow>! Delete an existing home first.</red>"
+  
+  # Teleport status messages
+  warmup-start: "<gold>⏳ Teleporting to %home% in %seconds% seconds. Do not move or take damage!</gold>"
+  warmup-cancelled-move: "<red>✘ Teleport cancelled — you moved.</red>"
+  warmup-cancelled-damage: "<red>✘ Teleport cancelled — you took damage.</red>"
+  warmup-cancelled-manual: "<red>✘ Teleport cancelled.</red>"
+  warmup-nothing-pending: "<gray>You don't have a pending teleport.</gray>"
+  teleport-success: "<green>✔ Teleported to %home%.</green>"
+  on-cooldown: "<red>You must wait <yellow>%seconds%</yellow> more seconds before teleporting again.</red>"
+  world-not-loaded: "<red>✘ Teleport failed — the world <white>%world%</white> is not currently loaded.</red>"
+
+  # Fallback plain homes list (e.g. for accessibility/compat)
+  plain-list-prefix: "<gold>Your homes (%count%/%limit%): </gold>"
+
+  # Stage 1 — Interactive Grid Menu Layout
+  grid-title: "Homes <yellow>⚠️</yellow>"
+  grid-occupied-button: "<hover:show_text:'<gray>World: <white>%world%</white><br>Coordinates: <white>%x%, %y%, %z%</white><br><yellow>Click to manage this home</yellow>'><click:run_command:'/homeselect %home%'><dark_gray>[</dark_gray><white>■ %home%</white><dark_gray>]</dark_gray></click></hover>"
+  grid-new-button: "<hover:show_text:'<gray>Unused Slot %index%</gray><br><yellow>Click to set a home here</yellow>'><click:run_command:'/homesetprompt %home%'><dark_gray>[</dark_gray><gray>New Home</gray><dark_gray>]</dark_gray></click></hover>"
+  grid-locked-button: "<hover:show_text:'<red>Locked Slot!</red><br><gray>Upgrade your rank to unlock more homes.</gray>'><click:run_command:'/buttonhome locked'><dark_gray>[</dark_gray><red>Locked</red><dark_gray>]</dark_gray></click></hover>"
+  grid-showmore-button: "<hover:show_text:'<gray>Click to view plain-text list of homes</gray>'><click:run_command:'/homes'><dark_gray>[</dark_gray><white>Show More</white><dark_gray>]</dark_gray></click></hover>"
+  locked-slot-clicked: "<red>This home slot is locked! Upgrade your rank or obtain permission <yellow>buttonhome.limit.<number></yellow> to unlock more slots.</red>"
+  no-homes: "<gray>You have no homes yet! Use <yellow>/sethome <name></yellow> to save your location.</gray>"
+
+  # Stage 2 — Manage Home Menu Layout
+  stage2-title: "         <aqua>⌂ <bold>%home%</bold></aqua>"
+  stage2-teleport-btn: "<hover:show_text:'<green>Click to teleport to %home%</green>'><click:run_command:'/hometp %home%'><bold><dark_gray>[</dark_gray><green>✔ TELEPORT</green><dark_gray>]</dark_gray></bold></click></hover>"
+  stage2-delete-btn: "<hover:show_text:'<red>Click to delete %home%</red>'><click:run_command:'/delhome %home%'><bold><dark_gray>[</dark_gray><red>❌ DELETE</red><dark_gray>]</dark_gray></bold></click></hover>"
+
+  # Stage 3 — Set Home Menu Layout
+  stage3-title: "         <aqua>⌂ Set home <bold>%home%</bold>?</aqua>"
+  stage3-sethome-btn: "<hover:show_text:'<green>Click to set home %home% here</green>'><click:run_command:'/sethome %home%'><bold><dark_gray>[</dark_gray><green>✔ SETHOME</green><dark_gray>]</dark_gray></bold></click></hover>"
+  stage3-cancel-btn: "<hover:show_text:'<red>Click to cancel</red>'><click:run_command:'/home'><bold><dark_gray>[</dark_gray><red>✘ CANCEL</red><dark_gray>]</dark_gray></bold></click></hover>"

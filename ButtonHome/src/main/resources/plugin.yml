@@ -1,0 +1,53 @@
+name: ButtonHome
+version: 1.0.0
+main: com.buttonhome.ButtonHome
+api-version: '1.21'
+author: MinePluginCreator
+description: A highly-customizable chat-button-based home system for Paper servers (Supports Paper 1.21.x - 26.1.2x).
+commands:
+  home:
+    description: Open the homes button menu or jump straight to Stage 2 for a home.
+    permission: homebutton.use
+    usage: /home [name]
+  homes:
+    description: List your homes or open the expanded grid menu.
+    permission: homebutton.use
+    usage: /homes
+  sethome:
+    description: Save your current location as a home.
+    permission: homebutton.use
+    usage: /sethome [name]
+  delhome:
+    description: Delete a home.
+    permission: homebutton.use
+    usage: /delhome <name>
+  adminhome:
+    description: See other player's homes and teleport to them instantly.
+    permission: homebutton.admin
+    usage: /adminhome <playername> [homename]
+  homeselect:
+    description: Internal command to display Stage 2 (teleport/cancel buttons) for a home.
+    usage: /homeselect <name>
+  hometp:
+    description: Internal command to start the teleport warmup.
+    usage: /hometp <name>
+  homecancel:
+    description: Internal command to cancel a pending teleport warmup.
+    usage: /homecancel
+  homesetprompt:
+    description: Internal command to prompt a player to set a home at their current location.
+    usage: /homesetprompt <name>
+  buttonhome:
+    description: Main command for ButtonHome plugin.
+    usage: /buttonhome [reload/locked/help]
+
+permissions:
+  homebutton.use:
+    description: Allows using basic home commands.
+    default: true
+  homebutton.admin:
+    description: Allows viewing and teleporting to other players' homes, and reloading config.
+    default: op
+  buttonhome.admin:
+    description: Legacy permission node for administrative command access.
+    default: op
