@@ -4,6 +4,8 @@ import com.buttonhome.ButtonHome;
 import com.buttonhome.manager.HomeManager;
 import com.buttonhome.manager.TeleportManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -78,21 +80,23 @@ public class InternalCommands implements CommandExecutor, TabCompleter {
             return;
         }
 
-        String mode = plugin.getConfig().getString("menu-mode", "GUI");
-        if (!mode.equalsIgnoreCase("CHAT")) {
-            plugin.getGuiManager().openStage2Gui(player, home);
-            return;
-        }
-
         // Render Stage 2 (teleport/delete buttons)
         player.sendMessage(plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-title")
                 .replace("%home%", home.getName()), null));
         player.sendMessage(plugin.parseMiniMessage(plugin.getFormattedMessage("messages.menu-divider"), null));
 
-        Component tpBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-teleport-btn")
-                .replace("%home%", home.getName()), null);
-        Component deleteBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-delete-btn")
-                .replace("%home%", home.getName()), null);
+        Component tpBtn = createChatButton(
+                "messages.stage2-teleport-btn",
+                home.getName(),
+                "/hometp " + home.getName(),
+                "Click to teleport to " + home.getName()
+        );
+        Component deleteBtn = createChatButton(
+                "messages.stage2-delete-btn",
+                home.getName(),
+                "/delhome " + home.getName(),
+                "Click to delete " + home.getName()
+        );
 
         player.sendMessage(tpBtn.append(Component.text("   ")).append(deleteBtn));
     }
@@ -105,23 +109,39 @@ public class InternalCommands implements CommandExecutor, TabCompleter {
 
         String homeName = args[0];
 
-        String mode = plugin.getConfig().getString("menu-mode", "GUI");
-        if (!mode.equalsIgnoreCase("CHAT")) {
-            plugin.getGuiManager().openStage3Gui(player, homeName);
-            return;
-        }
-
         // Render Stage 3 (sethome/cancel buttons)
         player.sendMessage(plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage3-title")
                 .replace("%home%", homeName), null));
         player.sendMessage(plugin.parseMiniMessage(plugin.getFormattedMessage("messages.menu-divider"), null));
 
-        Component setBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage3-sethome-btn")
-                .replace("%home%", homeName), null);
-        Component cancelBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage3-cancel-btn")
-                .replace("%home%", homeName), null);
+        Component setBtn = createChatButton(
+                "messages.stage3-sethome-btn",
+                homeName,
+                "/sethome " + homeName,
+                "Click to set home " + homeName
+        );
+        Component cancelBtn = createChatButton(
+                "messages.stage3-cancel-btn",
+                homeName,
+                "/homecancel",
+                "Click to cancel"
+        );
 
         player.sendMessage(setBtn.append(Component.text("   ")).append(cancelBtn));
+    }
+
+    private Component createChatButton(String configPath, String homeName, String command, String defaultHoverText) {
+        String rawTemplate = plugin.getFormattedMessage(configPath);
+        if (rawTemplate != null && !rawTemplate.isEmpty()) {
+            Component parsed = plugin.parseMiniMessage(rawTemplate.replace("%home%", homeName), null);
+            if (parsed != null && !parsed.equals(Component.empty())) {
+                return parsed;
+            }
+        }
+        // Direct Adventure API Component building with ClickEvent and HoverEvent fallback
+        return Component.text("[" + homeName + "]")
+                .clickEvent(ClickEvent.runCommand(command))
+                .hoverEvent(HoverEvent.showText(Component.text(defaultHoverText)));
     }
 
     private void handleHomeTp(Player player, UUID uuid, String[] args) {
