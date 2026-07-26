@@ -38,18 +38,21 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // Check menu mode configuration (GUI or CHAT)
-        String mode = plugin.getConfig().getString("menu-mode", "GUI");
-
         // Check if the command is /homes
         if (command.getName().equalsIgnoreCase("homes")) {
             if (args.length > 0 && args[0].equalsIgnoreCase("plain")) {
                 showPlainHomesList(player, uuid, homeManager);
-            } else if (mode.equalsIgnoreCase("CHAT")) {
-                List<HomeManager.Home> homes = homeManager.getHomes(uuid);
-                renderStage1Menu(player, homes, true); // true for expanded grid
             } else {
-                plugin.getGuiManager().openGridGui(player, true);
+                int page = 1;
+                if (args.length > 0) {
+                    try {
+                        page = Integer.parseInt(args[0]);
+                    } catch (NumberFormatException ignored) {
+                        page = 1;
+                    }
+                }
+                List<HomeManager.Home> homes = homeManager.getHomes(uuid);
+                renderStage1Paginated(player, homes, page);
             }
             return true;
         }
@@ -64,21 +67,13 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
             }
 
             // Trigger Stage 2 directly
-            if (mode.equalsIgnoreCase("CHAT")) {
-                showStage2Menu(player, home);
-            } else {
-                plugin.getGuiManager().openStage2Gui(player, home);
-            }
+            showStage2Menu(player, home);
             return true;
         }
 
-        // /home with no arguments (Stage 1 compact menu)
-        if (mode.equalsIgnoreCase("CHAT")) {
-            List<HomeManager.Home> homes = homeManager.getHomes(uuid);
-            renderStage1Menu(player, homes, false); // false for compact grid
-        } else {
-            plugin.getGuiManager().openGridGui(player, false);
-        }
+        // /home with no arguments (Stage 1 compact menu - 9 slots)
+        List<HomeManager.Home> homes = homeManager.getHomes(uuid);
+        renderStage1Compact(player, homes);
         return true;
     }
 
@@ -112,89 +107,138 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(prefixComp.append(listComp));
     }
 
-    private void renderStage1Menu(Player player, List<HomeManager.Home> homes, boolean expanded) {
+    private void renderStage1Compact(Player player, List<HomeManager.Home> homes) {
         int limit = plugin.getMaxHomes(player);
         int homesCount = homes.size();
-        
-        // Calculate grid slots to display (defaults to 9 minimum, or the player's active limit capped at 50)
-        int totalSlots;
-        if (expanded) {
-            totalSlots = Math.min(50, limit == Integer.MAX_VALUE ? Math.max(9, homesCount + 2) : limit);
-        } else {
-            totalSlots = Math.min(9, limit == Integer.MAX_VALUE ? 9 : limit);
-        }
+        int totalSlots = Math.min(9, limit == Integer.MAX_VALUE ? 9 : limit);
 
         List<Component> elements = new ArrayList<>();
 
-        // 1. Build all the slots
         for (int i = 0; i < totalSlots; i++) {
-            if (i < homesCount) {
-                // Occupied slot
-                HomeManager.Home home = homes.get(i);
-                String x = String.valueOf((int) home.getX());
-                String y = String.valueOf((int) home.getY());
-                String z = String.valueOf((int) home.getZ());
-
-                Map<String, String> placeholders = Map.of(
-                        "%index%", String.valueOf(i + 1),
-                        "%home%", home.getName(),
-                        "%world%", home.getWorldName(),
-                        "%x%", x,
-                        "%y%", y,
-                        "%z%", z
-                );
-                String template = plugin.getFormattedMessage("messages.grid-occupied-button");
-                if (template.isEmpty()) {
-                    template = "<hover:show_text:'<gray>World: <white>%world%</white><br>Coordinates: <white>%x%, %y%, %z%</white><br><yellow>Click to manage this home</yellow>'><click:run_command:'/homeselect %home%'><dark_gray>[</dark_gray><white>■ %home%</white><dark_gray>]</dark_gray></click></hover>";
-                }
-                elements.add(plugin.parseMiniMessage(template, placeholders));
-            } else if (limit == Integer.MAX_VALUE || i < limit) {
-                // Empty / New Home slot
-                String indexStr = String.valueOf(i + 1);
-                String defaultHomeName = "home_" + indexStr;
-                Map<String, String> placeholders = Map.of(
-                        "%index%", indexStr,
-                        "%home%", defaultHomeName
-                );
-                String template = plugin.getFormattedMessage("messages.grid-new-button");
-                if (template.isEmpty()) {
-                    template = "<hover:show_text:'<gray>Unused Slot %index%</gray><br><yellow>Click to set a home here</yellow>'><click:run_command:'/homesetprompt %home%'><dark_gray>[</dark_gray><gray>New Home</gray><dark_gray>]</dark_gray></click></hover>";
-                }
-                elements.add(plugin.parseMiniMessage(template, placeholders));
-            } else {
-                // Locked slot
-                String template = plugin.getFormattedMessage("messages.grid-locked-button");
-                if (template.isEmpty()) {
-                    template = "<hover:show_text:'<red>Locked Slot!</red><br><gray>Upgrade your rank to unlock more homes.</gray>'><click:run_command:'/buttonhome locked'><dark_gray>[</dark_gray><red>Locked</red><dark_gray>]</dark_gray></click></hover>";
-                }
-                elements.add(plugin.parseMiniMessage(template, null));
-            }
+            elements.add(createSlotButton(player, homes, i, limit, homesCount));
         }
 
-        // 2. Append the "Show More" button at the end ONLY if in compact view and limit > 9
-        if (!expanded && (limit > 9 || limit == Integer.MAX_VALUE)) {
+        // Append [Show More] button if limit > 9 or unlimited
+        if (limit > 9 || limit == Integer.MAX_VALUE) {
             String showMoreTemplate = plugin.getFormattedMessage("messages.grid-showmore-button");
             if (showMoreTemplate.isEmpty()) {
-                showMoreTemplate = "<hover:show_text:'<gray>Click to view plain-text list of homes</gray>'><click:run_command:'/homes'><dark_gray>[</dark_gray><white>Show More</white><dark_gray>]</dark_gray></click></hover>";
+                showMoreTemplate = "<hover:show_text:'<gray>Click to open expanded paginated homes list</gray>'><click:run_command:'/homes 1'><dark_gray>[</dark_gray><white>Show More</white><dark_gray>]</dark_gray></click></hover>";
             }
             elements.add(plugin.parseMiniMessage(showMoreTemplate, null));
         }
 
-        // 3. Render the Header
+        // Render Header
         String titleTemplate = plugin.getFormattedMessage("messages.grid-title");
         if (titleTemplate.isEmpty()) {
             titleTemplate = "<bold><white>Homes</white></bold> <yellow>⚠️</yellow>";
         }
         player.sendMessage(plugin.parseMiniMessage(titleTemplate, null));
 
-        // 4. Render the elements in rows of 6
+        // Render buttons in rows of 6
+        renderGridRows(player, elements);
+    }
+
+    private void renderStage1Paginated(Player player, List<HomeManager.Home> homes, int page) {
+        int limit = plugin.getMaxHomes(player);
+        int homesCount = homes.size();
+        int totalSlots = limit == Integer.MAX_VALUE ? Math.max(9, homesCount) : limit;
+        int totalPages = (int) Math.ceil((double) totalSlots / 9.0);
+        if (totalPages < 1) totalPages = 1;
+        if (page < 1) page = 1;
+        if (page > totalPages) page = totalPages;
+
+        int startSlot = (page - 1) * 9;
+        int endSlot = Math.min(startSlot + 9, totalSlots);
+
+        List<Component> elements = new ArrayList<>();
+        for (int i = startSlot; i < endSlot; i++) {
+            elements.add(createSlotButton(player, homes, i, limit, homesCount));
+        }
+
+        // Render Header
+        Map<String, String> pageMap = Map.of("%page%", String.valueOf(page), "%total_pages%", String.valueOf(totalPages));
+        String titleTemplate = plugin.getFormattedMessage("messages.grid-title-paginated");
+        if (titleTemplate.isEmpty()) {
+            titleTemplate = "<bold><white>Homes</white></bold> <yellow>⚠️</yellow> <gray>(Page %page%/%total_pages%)</gray>";
+        }
+        player.sendMessage(plugin.parseMiniMessage(titleTemplate, pageMap));
+
+        // Render buttons in rows of 6
+        renderGridRows(player, elements);
+
+        // Render Pagination Nav Controls
+        if (totalPages > 1) {
+            Component nav = Component.empty();
+            if (page > 1) {
+                String prevTemplate = plugin.getFormattedMessage("messages.prev-page-button");
+                if (prevTemplate.isEmpty()) {
+                    prevTemplate = "<hover:show_text:'<gray>Click for previous page</gray>'><click:run_command:'/homes %page%'><dark_gray>[</dark_gray><yellow>◀ Prev</yellow><dark_gray>]</dark_gray></click></hover>";
+                }
+                nav = nav.append(plugin.parseMiniMessage(prevTemplate, Map.of("%page%", String.valueOf(page - 1)))).append(Component.text("  "));
+            }
+
+            nav = nav.append(plugin.parseMiniMessage("<gray>Page <white>" + page + "</white>/<white>" + totalPages + "</white></gray>", null));
+
+            if (page < totalPages) {
+                String nextTemplate = plugin.getFormattedMessage("messages.next-page-button");
+                if (nextTemplate.isEmpty()) {
+                    nextTemplate = "<hover:show_text:'<gray>Click for next page</gray>'><click:run_command:'/homes %page%'><dark_gray>[</dark_gray><yellow>Next ▶</yellow><dark_gray>]</dark_gray></click></hover>";
+                }
+                nav = nav.append(Component.text("  ")).append(plugin.parseMiniMessage(nextTemplate, Map.of("%page%", String.valueOf(page + 1))));
+            }
+            player.sendMessage(nav);
+        }
+    }
+
+    private Component createSlotButton(Player player, List<HomeManager.Home> homes, int slotIndex, int limit, int homesCount) {
+        if (slotIndex < homesCount) {
+            // Occupied slot
+            HomeManager.Home home = homes.get(slotIndex);
+            Map<String, String> placeholders = Map.of(
+                    "%index%", String.valueOf(slotIndex + 1),
+                    "%home%", home.getName(),
+                    "%world%", home.getWorldName(),
+                    "%x%", String.valueOf((int) home.getX()),
+                    "%y%", String.valueOf((int) home.getY()),
+                    "%z%", String.valueOf((int) home.getZ())
+            );
+            String template = plugin.getFormattedMessage("messages.grid-occupied-button");
+            if (template.isEmpty()) {
+                template = "<hover:show_text:'<gray>World: <white>%world%</white><br>Coordinates: <white>%x%, %y%, %z%</white><br><yellow>Click to manage this home</yellow>'><click:run_command:'/homeselect %home%'><dark_gray>[</dark_gray><white>■ %home%</white><dark_gray>]</dark_gray></click></hover>";
+            }
+            return plugin.parseMiniMessage(template, placeholders);
+        } else if (limit == Integer.MAX_VALUE || slotIndex < limit) {
+            // New Home slot
+            String indexStr = String.valueOf(slotIndex + 1);
+            String defaultHomeName = "home_" + indexStr;
+            Map<String, String> placeholders = Map.of(
+                    "%index%", indexStr,
+                    "%home%", defaultHomeName
+            );
+            String template = plugin.getFormattedMessage("messages.grid-new-button");
+            if (template.isEmpty()) {
+                template = "<hover:show_text:'<gray>Unused Slot %index%</gray><br><yellow>Click to set a home here</yellow>'><click:run_command:'/homesetprompt %home%'><dark_gray>[</dark_gray><gray>New Home</gray><dark_gray>]</dark_gray></click></hover>";
+            }
+            return plugin.parseMiniMessage(template, placeholders);
+        } else {
+            // Locked slot
+            Map<String, String> placeholders = Map.of("%index%", String.valueOf(slotIndex + 1));
+            String template = plugin.getFormattedMessage("messages.grid-locked-button");
+            if (template.isEmpty()) {
+                template = "<hover:show_text:'<red>Locked Slot %index%!</red><br><gray>Requires permission homebutton.limit.%index%</gray>'><click:run_command:'/buttonhome locked'><dark_gray>[</dark_gray><red>Locked</red><dark_gray>]</dark_gray></click></hover>";
+            }
+            return plugin.parseMiniMessage(template, placeholders);
+        }
+    }
+
+    private void renderGridRows(Player player, List<Component> elements) {
         TextComponent.Builder rowBuilder = Component.text();
         for (int i = 0; i < elements.size(); i++) {
             rowBuilder.append(elements.get(i));
 
             boolean isLastInRow = ((i + 1) % 6 == 0) || (i == elements.size() - 1);
             if (!isLastInRow) {
-                rowBuilder.append(Component.text("  ")); // double spacing for beautiful layout breathing room
+                rowBuilder.append(Component.text("  "));
             } else {
                 player.sendMessage(rowBuilder.build());
                 rowBuilder = Component.text();
