@@ -2,9 +2,6 @@
 # ButtonHome Configuration File
 # ==========================================
 
-# Menu display mode: "GUI" for Chest Inventory buttons or "CHAT" for Chat MiniMessage buttons
-menu-mode: GUI
-
 # Home limit for players without a specific permission node (buttonhome.limit.<n>)
 default-max-homes: 2
 
@@ -50,10 +47,13 @@ messages:
 
   # Stage 1 — Interactive Grid Menu Layout
   grid-title: "Homes <yellow>⚠️</yellow>"
+  grid-title-paginated: "Homes <yellow>⚠️</yellow> <gray>(Page %page%/%total_pages%)</gray>"
   grid-occupied-button: "<hover:show_text:'<gray>World: <white>%world%</white><br>Coordinates: <white>%x%, %y%, %z%</white><br><yellow>Click to manage this home</yellow>'><click:run_command:'/homeselect %home%'><dark_gray>[</dark_gray><white>■ %home%</white><dark_gray>]</dark_gray></click></hover>"
   grid-new-button: "<hover:show_text:'<gray>Unused Slot %index%</gray><br><yellow>Click to set a home here</yellow>'><click:run_command:'/homesetprompt %home%'><dark_gray>[</dark_gray><gray>New Home</gray><dark_gray>]</dark_gray></click></hover>"
-  grid-locked-button: "<hover:show_text:'<red>Locked Slot!</red><br><gray>Upgrade your rank to unlock more homes.</gray>'><click:run_command:'/buttonhome locked'><dark_gray>[</dark_gray><red>Locked</red><dark_gray>]</dark_gray></click></hover>"
-  grid-showmore-button: "<hover:show_text:'<gray>Click to view plain-text list of homes</gray>'><click:run_command:'/homes'><dark_gray>[</dark_gray><white>Show More</white><dark_gray>]</dark_gray></click></hover>"
+  grid-locked-button: "<hover:show_text:'<red>Locked Slot!</red><br><gray>Upgrade your rank or get permission buttonhome.limit.%index% to unlock.</gray>'><click:run_command:'/buttonhome locked'><dark_gray>[</dark_gray><red>Locked</red><dark_gray>]</dark_gray></click></hover>"
+  grid-showmore-button: "<hover:show_text:'<gray>Click to view expanded paginated homes</gray>'><click:run_command:'/homes 1'><dark_gray>[</dark_gray><white>Show More</white><dark_gray>]</dark_gray></click></hover>"
+  prev-page-button: "<hover:show_text:'<gray>Click for previous page</gray>'><click:run_command:'/homes %page%'><dark_gray>[</dark_gray><yellow>◀ Prev</yellow><dark_gray>]</dark_gray></click></hover>"
+  next-page-button: "<hover:show_text:'<gray>Click for next page</gray>'><click:run_command:'/homes %page%'><dark_gray>[</dark_gray><yellow>Next ▶</yellow><dark_gray>]</dark_gray></click></hover>"
   locked-slot-clicked: "<red>This home slot is locked! Upgrade your rank or obtain permission <yellow>buttonhome.limit.<number></yellow> to unlock more slots.</red>"
   no-homes: "<gray>You have no homes yet! Use <yellow>/sethome <name></yellow> to save your location.</gray>"
 
