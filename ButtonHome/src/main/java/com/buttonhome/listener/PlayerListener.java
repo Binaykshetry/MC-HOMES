@@ -1,20 +1,14 @@
 package com.buttonhome.listener;
 
 import com.buttonhome.ButtonHome;
-import com.buttonhome.manager.GuiManager;
-import com.buttonhome.manager.HomeManager;
 import com.buttonhome.manager.TeleportManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 public class PlayerListener implements Listener {
 
@@ -22,69 +16,6 @@ public class PlayerListener implements Listener {
 
     public PlayerListener(ButtonHome plugin) {
         this.plugin = plugin;
-    }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
-        if (event.getInventory().getHolder() instanceof GuiManager.HomeGuiHolder) {
-            event.setCancelled(true);
-
-            ItemStack currentItem = event.getCurrentItem();
-            if (currentItem == null || !currentItem.hasItemMeta()) return;
-
-            Player player = (Player) event.getWhoClicked();
-            GuiManager guiManager = plugin.getGuiManager();
-            PersistentDataContainer pdc = currentItem.getItemMeta().getPersistentDataContainer();
-
-            String buttonType = pdc.get(guiManager.getButtonTypeKey(), PersistentDataType.STRING);
-            String buttonData = pdc.get(guiManager.getButtonDataKey(), PersistentDataType.STRING);
-
-            if (buttonType == null) return;
-
-            switch (buttonType) {
-                case "select_home":
-                    if (buttonData != null) {
-                        HomeManager.Home home = plugin.getHomeManager().getHome(player.getUniqueId(), buttonData);
-                        if (home != null) {
-                            guiManager.openStage2Gui(player, home);
-                        }
-                    }
-                    break;
-                case "new_home":
-                    if (buttonData != null) {
-                        guiManager.openStage3Gui(player, buttonData);
-                    }
-                    break;
-                case "tp":
-                    if (buttonData != null) {
-                        player.closeInventory();
-                        player.performCommand("hometp " + buttonData);
-                    }
-                    break;
-                case "delete":
-                    if (buttonData != null) {
-                        player.closeInventory();
-                        player.performCommand("delhome " + buttonData);
-                    }
-                    break;
-                case "confirm_set":
-                    if (buttonData != null) {
-                        player.closeInventory();
-                        player.performCommand("sethome " + buttonData);
-                    }
-                    break;
-                case "show_more":
-                    guiManager.openGridGui(player, true);
-                    break;
-                case "back":
-                    guiManager.openGridGui(player, false);
-                    break;
-                case "locked":
-                    player.performCommand("buttonhome locked");
-                    break;
-            }
-        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
