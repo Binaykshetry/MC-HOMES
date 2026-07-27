@@ -31,8 +31,8 @@ public class DelHomeCommand implements CommandExecutor, TabCompleter {
         HomeManager homeManager = plugin.getHomeManager();
 
         // Check command permission
-        if (!player.hasPermission("homebutton.use") && !player.hasPermission("homebutton.admin") && !player.isOp()) {
-            plugin.sendConfigMessage(player, "messages.no-permission", null);
+        if (!player.hasPermission("buttonhome.use") && !player.hasPermission("home.use") && !player.hasPermission("homebutton.use") && !player.hasPermission("homebutton.admin") && !player.hasPermission("buttonhome.admin") && !player.isOp()) {
+            player.sendMessage(net.kyori.adventure.text.Component.text("You don't have permission to use home", net.kyori.adventure.text.format.NamedTextColor.RED));
             return true;
         }
 

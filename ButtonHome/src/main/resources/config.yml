@@ -2,6 +2,9 @@
 # ButtonHome Configuration File
 # ==========================================
 
+# Menu display mode: "CHAT" for Chat MiniMessage buttons or "GUI" for Chest Inventory screen
+menu-mode: GUI
+
 # Home limit for players without a specific permission node (buttonhome.limit.<n>)
 default-max-homes: 2
 
@@ -19,6 +22,7 @@ teleport-cooldown-seconds: 0
 
 # Player-facing messages (formatted with MiniMessage)
 messages:
+  menu-divider: "<dark_gray>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬</dark_gray>"
   # General error messages
   no-permission: "<red>You do not have permission to use this command!</red>"
   player-only: "<red>Only players can use this command!</red>"
@@ -45,7 +49,7 @@ messages:
   # Fallback plain homes list (e.g. for accessibility/compat)
   plain-list-prefix: "<gold>Your homes (%count%/%limit%): </gold>"
 
-  # Stage 1 — Interactive Grid Menu Layout
+  # Stage 1 — Interactive Grid Menu Layout (Chat-mode Fallback)
   grid-title: "Homes <yellow>⚠️</yellow>"
   grid-title-paginated: "Homes <yellow>⚠️</yellow> <gray>(Page %page%/%total_pages%)</gray>"
   grid-occupied-button: "<hover:show_text:'<gray>World: <white>%world%</white><br>Coordinates: <white>%x%, %y%, %z%</white><br><yellow>Click to manage this home</yellow>'><click:run_command:'/homeselect %home%'><dark_gray>[</dark_gray><white>■ %home%</white><dark_gray>]</dark_gray></click></hover>"
@@ -54,15 +58,118 @@ messages:
   grid-showmore-button: "<hover:show_text:'<gray>Click to view expanded paginated homes</gray>'><click:run_command:'/homes 1'><dark_gray>[</dark_gray><white>Show More</white><dark_gray>]</dark_gray></click></hover>"
   prev-page-button: "<hover:show_text:'<gray>Click for previous page</gray>'><click:run_command:'/homes %page%'><dark_gray>[</dark_gray><yellow>◀ Prev</yellow><dark_gray>]</dark_gray></click></hover>"
   next-page-button: "<hover:show_text:'<gray>Click for next page</gray>'><click:run_command:'/homes %page%'><dark_gray>[</dark_gray><yellow>Next ▶</yellow><dark_gray>]</dark_gray></click></hover>"
-  locked-slot-clicked: "<red>This home slot is locked! Upgrade your rank or obtain permission <yellow>buttonhome.limit.<number></yellow> to unlock more slots.</red>"
+  locked-slot-clicked: "<red>This home slot is locked! Upgrade your rank or obtain permission <yellow>buttonhome.limit.%index%</yellow> to unlock more slots.</red>"
   no-homes: "<gray>You have no homes yet! Use <yellow>/sethome <name></yellow> to save your location.</gray>"
 
-  # Stage 2 — Manage Home Menu Layout
+  # Stage 2 — Manage Home Menu Layout (Chat-mode Fallback)
   stage2-title: "         <aqua>⌂ <bold>%home%</bold></aqua>"
   stage2-teleport-btn: "<hover:show_text:'<green>Click to teleport to %home%</green>'><click:run_command:'/hometp %home%'><bold><dark_gray>[</dark_gray><green>✔ TELEPORT</green><dark_gray>]</dark_gray></bold></click></hover>"
   stage2-delete-btn: "<hover:show_text:'<red>Click to delete %home%</red>'><click:run_command:'/delhome %home%'><bold><dark_gray>[</dark_gray><red>❌ DELETE</red><dark_gray>]</dark_gray></bold></click></hover>"
 
-  # Stage 3 — Set Home Menu Layout
+  # Stage 3 — Set Home Menu Layout (Chat-mode Fallback)
   stage3-title: "         <aqua>⌂ Set home <bold>%home%</bold>?</aqua>"
   stage3-sethome-btn: "<hover:show_text:'<green>Click to set home %home% here</green>'><click:run_command:'/sethome %home%'><bold><dark_gray>[</dark_gray><green>✔ SETHOME</green><dark_gray>]</dark_gray></bold></click></hover>"
-  stage3-cancel-btn: "<hover:show_text:'<red>Click to cancel</red>'><click:run_command:'/home'><bold><dark_gray>[</dark_gray><red>✘ CANCEL</red><dark_gray>]</dark_gray></bold></click></hover>"
+  stage3-cancel-btn: "<hover:show_text:'<red>Click to cancel</red>'><click:run_command:'/home'><bold><dark_gray>[</dark_gray><red>✘ CANCEL</dark_gray>]</dark_gray></bold></click></hover>"
+
+# ==========================================
+# GUI / Chest Inventory Configuration
+# ==========================================
+gui:
+  settings:
+    # Inventory rows (1 to 6)
+    rows: 3
+    # Default item material to apply CustomModelData to
+    material: PAPER
+    # Slots where home buttons will be placed in the main grid menu.
+    # Default is the middle row of a 3-row chest inventory.
+    button-slots: [10, 11, 12, 13, 14, 15, 16]
+    # Page navigation slots
+    prev-page-slot: 18
+    # Next page slot
+    next-page-slot: 26
+
+  # Menu Titles (can use custom font unicode symbols for custom resource pack overlay backgrounds!)
+  stage1:
+    # Title of the main homes list grid.
+    # Tip: Use a special unicode character like "\uE001" to render a full-screen custom UI background texture.
+    title: "Homes Grid"
+  stage2:
+    # Title of the single home management screen.
+    title: "Manage %home%"
+    # Slot allocations for actions
+    teleport-slot: 11
+    delete-slot: 15
+    back-slot: 22
+  stage3:
+    # Title of the sethome confirmation screen.
+    title: "Set home %home%?"
+    # Slot allocations for actions
+    confirm-slot: 11
+    cancel-slot: 15
+
+  # Interactive GUI Items configuration with CustomModelData for Resource Packs!
+  items:
+    occupied:
+      name: "<white>■ %home%</white>"
+      lore:
+        - "<gray>World: <white>%world%</white></gray>"
+        - "<gray>Location: <yellow>%x%, %y%, %z%</yellow></gray>"
+        - ""
+        - "<yellow>⚡ Click to manage this home!</yellow>"
+      custom-model-data: 10001
+    new:
+      name: "<gray>New Home (%index%)</gray>"
+      lore:
+        - "<gray>Unused slot.</gray>"
+        - ""
+        - "<green>✚ Click to save your current</green>"
+        - "<green>  location to this slot.</green>"
+      custom-model-data: 10002
+    locked:
+      name: "<red>🔒 Locked Slot %index%</red>"
+      lore:
+        - "<gray>Obtain permission node</gray>"
+        - "<yellow>buttonhome.limit.%index%</yellow>"
+        - "<gray>or upgrade your server rank</gray>"
+        - "<gray>to unlock this home slot.</gray>"
+      custom-model-data: 10003
+    teleport:
+      name: "<green>✔ TELEPORT</green>"
+      lore:
+        - "<gray>Teleport safely to <white>%home%</white>.</gray>"
+        - ""
+        - "<yellow>⚡ Click to teleport</yellow>"
+      custom-model-data: 10006
+    delete:
+      name: "<red>❌ DELETE</red>"
+      lore:
+        - "<gray>Permanently delete <white>%home%</white>.</gray>"
+        - ""
+        - "<red>⚠️ This action is irreversible!</red>"
+      custom-model-data: 10007
+    confirm-set:
+      name: "<green>✔ CONFIRM SETHOME</green>"
+      lore:
+        - "<gray>Save your current location</gray>"
+        - "<gray>as <white>%home%</white>.</gray>"
+        - ""
+        - "<yellow>⚡ Click to save</yellow>"
+      custom-model-data: 10008
+    cancel:
+      name: "<red>✘ CANCEL</red>"
+      lore:
+        - "<gray>Go back to the homes list.</gray>"
+      custom-model-data: 10005
+    back:
+      name: "<yellow>◀ Back to List</yellow>"
+      lore:
+        - "<gray>Return to homes main grid.</gray>"
+      custom-model-data: 10005
+    prev-page:
+      name: "<yellow>◀ Previous Page</yellow>"
+      lore:
+        - "<gray>Go back one page.</gray>"
+    next-page:
+      name: "<yellow>Next Page ▶</yellow>"
+      lore:
+        - "<gray>View more home slots.</gray>"

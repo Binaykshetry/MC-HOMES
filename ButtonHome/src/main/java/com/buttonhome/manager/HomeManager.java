@@ -23,8 +23,18 @@ public class HomeManager {
         private final double z;
         private final float yaw;
         private final float pitch;
+        private final String iconMaterial;
+        private final int slot;
 
         public Home(String name, String worldName, double x, double y, double z, float yaw, float pitch) {
+            this(name, worldName, x, y, z, yaw, pitch, "LIME_BED", 1);
+        }
+
+        public Home(String name, String worldName, double x, double y, double z, float yaw, float pitch, String iconMaterial) {
+            this(name, worldName, x, y, z, yaw, pitch, iconMaterial, 1);
+        }
+
+        public Home(String name, String worldName, double x, double y, double z, float yaw, float pitch, String iconMaterial, int slot) {
             this.name = name;
             this.worldName = worldName;
             this.x = x;
@@ -32,6 +42,8 @@ public class HomeManager {
             this.z = z;
             this.yaw = yaw;
             this.pitch = pitch;
+            this.iconMaterial = iconMaterial != null ? iconMaterial : "LIME_BED";
+            this.slot = slot;
         }
 
         public String getName() {
@@ -60,6 +72,14 @@ public class HomeManager {
 
         public float getPitch() {
             return pitch;
+        }
+
+        public String getIconMaterial() {
+            return iconMaterial;
+        }
+
+        public int getSlot() {
+            return slot;
         }
 
         public Location toLocation() {
@@ -107,6 +127,7 @@ public class HomeManager {
             }
 
             LinkedHashMap<String, Home> homesMap = new LinkedHashMap<>();
+            int nextAutoSlot = 1;
             for (String homeName : playerSection.getKeys(false)) {
                 ConfigurationSection homeSection = playerSection.getConfigurationSection(homeName);
                 if (homeSection == null) {
@@ -124,12 +145,31 @@ public class HomeManager {
                 double z = homeSection.getDouble("z");
                 float yaw = (float) homeSection.getDouble("yaw");
                 float pitch = (float) homeSection.getDouble("pitch");
+                String iconMaterial = homeSection.getString("icon", "LIME_BED");
+                int slot = homeSection.getInt("slot", 0);
 
-                Home home = new Home(homeName, worldName, x, y, z, yaw, pitch);
+                if (slot <= 0 || slot > 50) {
+                    slot = nextAutoSlot;
+                    while (hasHomeAtSlot(homesMap, slot) && slot <= 50) {
+                        slot++;
+                    }
+                    nextAutoSlot = slot + 1;
+                }
+
+                Home home = new Home(homeName, worldName, x, y, z, yaw, pitch, iconMaterial, slot);
                 homesMap.put(homeName.toLowerCase(), home);
             }
             userHomes.put(uuid, homesMap);
         }
+    }
+
+    private boolean hasHomeAtSlot(Map<String, Home> map, int slot) {
+        for (Home h : map.values()) {
+            if (h.getSlot() == slot) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -154,6 +194,8 @@ public class HomeManager {
                 homeSection.set("z", home.getZ());
                 homeSection.set("yaw", home.getYaw());
                 homeSection.set("pitch", home.getPitch());
+                homeSection.set("icon", home.getIconMaterial());
+                homeSection.set("slot", home.getSlot());
             }
         }
 
@@ -190,10 +232,63 @@ public class HomeManager {
      * Add or update a home for a player. Saves to disk immediately.
      */
     public void setHome(UUID uuid, String homeName, Location loc) {
+        int slot = 1;
+        LinkedHashMap<String, Home> homesMap = userHomes.get(uuid);
+        if (homesMap != null) {
+            for (int i = 1; i <= 50; i++) {
+                if (!hasHomeAtSlot(homesMap, i)) {
+                    slot = i;
+                    break;
+                }
+            }
+        }
+        setHome(uuid, homeName, loc, null, slot);
+    }
+
+    /**
+     * Add or update a home for a player with a specific icon material.
+     */
+    public void setHome(UUID uuid, String homeName, Location loc, String iconMaterial) {
+        int slot = 1;
+        LinkedHashMap<String, Home> homesMap = userHomes.get(uuid);
+        if (homesMap != null) {
+            Home oldHome = homesMap.get(homeName.toLowerCase());
+            if (oldHome != null) {
+                slot = oldHome.getSlot();
+            } else {
+                for (int i = 1; i <= 50; i++) {
+                    if (!hasHomeAtSlot(homesMap, i)) {
+                        slot = i;
+                        break;
+                    }
+                }
+            }
+        }
+        setHome(uuid, homeName, loc, iconMaterial, slot);
+    }
+
+    /**
+     * Add or update a home for a player with a specific icon material and slot.
+     */
+    public void setHome(UUID uuid, String homeName, Location loc, String iconMaterial, int slot) {
         LinkedHashMap<String, Home> homesMap = userHomes.computeIfAbsent(uuid, k -> new LinkedHashMap<>());
-        Home home = new Home(homeName, loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+        Home oldHome = homesMap.get(homeName.toLowerCase());
         
-        // Remove old entry to handle case updates and maintain position, or replace in-place
+        // Remove any home already occupying this slot for this player to avoid slot conflict
+        Home homeToReplace = null;
+        for (Home h : homesMap.values()) {
+            if (h.getSlot() == slot) {
+                homeToReplace = h;
+                break;
+            }
+        }
+        if (homeToReplace != null) {
+            homesMap.remove(homeToReplace.getName().toLowerCase());
+        }
+
+        String materialToUse = iconMaterial != null ? iconMaterial : (oldHome != null ? oldHome.getIconMaterial() : "LIME_BED");
+        Home home = new Home(homeName, loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch(), materialToUse, slot);
+        
         homesMap.put(homeName.toLowerCase(), home);
         saveHomes();
     }
@@ -224,5 +319,22 @@ public class HomeManager {
     public int getHomeCount(UUID uuid) {
         LinkedHashMap<String, Home> homesMap = userHomes.get(uuid);
         return homesMap == null ? 0 : homesMap.size();
+    }
+
+    /**
+     * Get the first available (unlocked & empty) slot for a player.
+     */
+    public int getFirstAvailableSlot(org.bukkit.entity.Player player) {
+        LinkedHashMap<String, Home> homesMap = userHomes.get(player.getUniqueId());
+        for (int i = 1; i <= 50; i++) {
+            // Check if player has permission for slot i
+            if (player.hasPermission("buttonhome." + i) || player.hasPermission("buttonhome.admin") || player.hasPermission("homebutton.admin") || player.isOp()) {
+                // Check if slot is empty
+                if (homesMap == null || !hasHomeAtSlot(homesMap, i)) {
+                    return i;
+                }
+            }
+        }
+        return -1; // No empty unlocked slot found
     }
 }

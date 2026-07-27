@@ -54,7 +54,7 @@ public class AdminHomeCommand implements CommandExecutor, TabCompleter {
         } else {
             // Check offline players
             org.bukkit.OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(targetName);
-            if (offlinePlayer.hasPlayedBefore() || offlinePlayer.getUniqueId() != null) {
+            if (offlinePlayer.hasPlayedBefore()) {
                 targetUuid = offlinePlayer.getUniqueId();
                 if (offlinePlayer.getName() != null) {
                     targetName = offlinePlayer.getName(); // Normalize case

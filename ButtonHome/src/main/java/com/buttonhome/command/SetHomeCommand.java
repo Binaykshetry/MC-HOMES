@@ -31,8 +31,8 @@ public class SetHomeCommand implements CommandExecutor, TabCompleter {
         HomeManager homeManager = plugin.getHomeManager();
 
         // Check command permission
-        if (!player.hasPermission("homebutton.use") && !player.hasPermission("homebutton.admin") && !player.isOp()) {
-            plugin.sendConfigMessage(player, "messages.no-permission", null);
+        if (!player.hasPermission("buttonhome.use") && !player.hasPermission("home.use") && !player.hasPermission("homebutton.use") && !player.hasPermission("homebutton.admin") && !player.hasPermission("buttonhome.admin") && !player.isOp()) {
+            player.sendMessage(net.kyori.adventure.text.Component.text("You don't have permission to use home", net.kyori.adventure.text.format.NamedTextColor.RED));
             return true;
         }
 
@@ -48,20 +48,23 @@ public class SetHomeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // 3. Check home limit
-        int currentCount = homeManager.getHomeCount(uuid);
-        int maxHomes = plugin.getMaxHomes(player);
-        boolean isOverwrite = homeManager.getHome(uuid, homeName) != null;
-
-        if (!isOverwrite && currentCount >= maxHomes) {
-            plugin.sendConfigMessage(player, "messages.limit-reached", Map.of(
-                    "%limit%", String.valueOf(maxHomes)
-            ));
-            return true;
+        // 3. Resolve slot and check limit
+        HomeManager.Home existingHome = homeManager.getHome(uuid, homeName);
+        int slotToUse;
+        if (existingHome != null) {
+            slotToUse = existingHome.getSlot();
+        } else {
+            slotToUse = homeManager.getFirstAvailableSlot(player);
+            if (slotToUse == -1) {
+                plugin.sendConfigMessage(player, "messages.limit-reached", Map.of(
+                        "%limit%", "50"
+                ));
+                return true;
+            }
         }
 
         // 4. Save home
-        homeManager.setHome(uuid, homeName, player.getLocation());
+        homeManager.setHome(uuid, homeName, player.getLocation(), null, slotToUse);
         plugin.sendConfigMessage(player, "messages.home-set", Map.of(
                 "%home%", homeName
         ));

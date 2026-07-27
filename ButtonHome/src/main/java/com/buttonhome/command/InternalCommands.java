@@ -40,8 +40,8 @@ public class InternalCommands implements CommandExecutor, TabCompleter {
 
         // Enforce basic permissions for internal teleportation / selection commands
         if (cmdName.equals("homeselect") || cmdName.equals("hometp") || cmdName.equals("homecancel") || cmdName.equals("homesetprompt")) {
-            if (!player.hasPermission("homebutton.use") && !player.hasPermission("homebutton.admin") && !player.isOp()) {
-                plugin.sendConfigMessage(player, "messages.no-permission", null);
+            if (!player.hasPermission("buttonhome.use") && !player.hasPermission("home.use") && !player.hasPermission("homebutton.use") && !player.hasPermission("homebutton.admin") && !player.hasPermission("buttonhome.admin") && !player.isOp()) {
+                player.sendMessage(Component.text("You don't have permission to use home", net.kyori.adventure.text.format.NamedTextColor.RED));
                 return true;
             }
         }
@@ -80,6 +80,11 @@ public class InternalCommands implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (plugin.getConfig().getString("menu-mode", "GUI").equalsIgnoreCase("GUI")) {
+            plugin.getDialogManager().openManageHome(player, home);
+            return;
+        }
+
         // Render Stage 2 (teleport/delete buttons)
         player.sendMessage(plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-title")
                 .replace("%home%", home.getName()), null));
@@ -108,6 +113,11 @@ public class InternalCommands implements CommandExecutor, TabCompleter {
         }
 
         String homeName = args[0];
+
+        if (plugin.getConfig().getString("menu-mode", "GUI").equalsIgnoreCase("GUI")) {
+            plugin.getDialogManager().openRenameDialog(player, null, homeName);
+            return;
+        }
 
         // Render Stage 3 (sethome/cancel buttons)
         player.sendMessage(plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage3-title")
@@ -181,7 +191,8 @@ public class InternalCommands implements CommandExecutor, TabCompleter {
         if (args.length > 0) {
             String sub = args[0].toLowerCase();
             if (sub.equals("locked")) {
-                plugin.sendConfigMessage(player, "messages.locked-slot-clicked", null);
+                String index = args.length > 1 ? args[1] : "";
+                plugin.sendConfigMessage(player, "messages.locked-slot-clicked", Map.of("%index%", index));
                 return;
             } else if (sub.equals("reload")) {
                 if (!player.hasPermission("homebutton.admin") && !player.hasPermission("buttonhome.admin") && !player.isOp()) {

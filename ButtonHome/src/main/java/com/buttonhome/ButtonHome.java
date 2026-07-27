@@ -20,6 +20,7 @@ public final class ButtonHome extends JavaPlugin {
 
     private HomeManager homeManager;
     private TeleportManager teleportManager;
+    private com.buttonhome.manager.DialogManager dialogManager;
 
     @Override
     public void onEnable() {
@@ -29,6 +30,7 @@ public final class ButtonHome extends JavaPlugin {
         // 2. Initialize Managers
         this.homeManager = new HomeManager(this);
         this.teleportManager = new TeleportManager(this);
+        this.dialogManager = new com.buttonhome.manager.DialogManager(this);
 
         // 3. Register Listener
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -72,6 +74,10 @@ public final class ButtonHome extends JavaPlugin {
 
     public TeleportManager getTeleportManager() {
         return teleportManager;
+    }
+
+    public com.buttonhome.manager.DialogManager getDialogManager() {
+        return dialogManager;
     }
 
     /**
@@ -154,7 +160,7 @@ public final class ButtonHome extends JavaPlugin {
 
         // Loop from 50 down to 1 to find the highest permission
         for (int i = 50; i >= 1; i--) {
-            if (player.hasPermission("homebutton." + i)) {
+            if (player.hasPermission("buttonhome." + i) || player.hasPermission("homebutton." + i)) {
                 return i;
             }
         }

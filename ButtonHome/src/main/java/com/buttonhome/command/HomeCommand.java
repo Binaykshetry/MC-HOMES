@@ -33,8 +33,8 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
         HomeManager homeManager = plugin.getHomeManager();
 
         // Check command permission
-        if (!player.hasPermission("homebutton.use") && !player.hasPermission("homebutton.admin") && !player.isOp()) {
-            plugin.sendConfigMessage(player, "messages.no-permission", null);
+        if (!player.hasPermission("buttonhome.use") && !player.hasPermission("home.use") && !player.hasPermission("homebutton.use") && !player.hasPermission("homebutton.admin") && !player.hasPermission("buttonhome.admin") && !player.isOp()) {
+            player.sendMessage(Component.text("You don't have permission to use home", net.kyori.adventure.text.format.NamedTextColor.RED));
             return true;
         }
 
@@ -51,8 +51,12 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
                         page = 1;
                     }
                 }
-                List<HomeManager.Home> homes = homeManager.getHomes(uuid);
-                renderStage1Paginated(player, homes, page);
+                if (plugin.getConfig().getString("menu-mode", "GUI").equalsIgnoreCase("GUI")) {
+                    plugin.getDialogManager().openHomeGrid(player, page);
+                } else {
+                    List<HomeManager.Home> homes = homeManager.getHomes(uuid);
+                    renderStage1Paginated(player, homes, page);
+                }
             }
             return true;
         }
@@ -66,14 +70,22 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            // Trigger Stage 2 directly
-            showStage2Menu(player, home);
+            // Trigger Stage 2
+            if (plugin.getConfig().getString("menu-mode", "GUI").equalsIgnoreCase("GUI")) {
+                plugin.getDialogManager().openManageHome(player, home);
+            } else {
+                showStage2Menu(player, home);
+            }
             return true;
         }
 
-        // /home with no arguments (Stage 1 compact menu - 9 slots)
-        List<HomeManager.Home> homes = homeManager.getHomes(uuid);
-        renderStage1Compact(player, homes);
+        // /home with no arguments (Stage 1 compact menu)
+        if (plugin.getConfig().getString("menu-mode", "GUI").equalsIgnoreCase("GUI")) {
+            plugin.getDialogManager().openHomeGrid(player, 1);
+        } else {
+            List<HomeManager.Home> homes = homeManager.getHomes(uuid);
+            renderStage1Compact(player, homes);
+        }
         return true;
     }
 
@@ -256,11 +268,11 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
 
         Component tpBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-teleport-btn")
                 .replace("%home%", home.getName()), null);
-        Component cancelBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-cancel-btn")
+        Component deleteBtn = plugin.parseMiniMessage(plugin.getFormattedMessage("messages.stage2-delete-btn")
                 .replace("%home%", home.getName()), null);
 
         // Send side by side with spacing
-        player.sendMessage(tpBtn.append(Component.text("   ")).append(cancelBtn));
+        player.sendMessage(tpBtn.append(Component.text("   ")).append(deleteBtn));
     }
 
     @Override
