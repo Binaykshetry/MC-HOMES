@@ -55,10 +55,14 @@ public class DialogManager {
     // 5.1 — HOME GRID  (equivalent of your screenshot's "Homes" screen)
     // ------------------------------------------------------------------
     public void openHomeGrid(Player player, int page) {
+        if (page < 1) page = 1;
         List<HomeManager.Home> homes = plugin.getHomeManager().getHomes(player.getUniqueId());
         List<ActionButton> buttons = new ArrayList<>();
 
-        for (int i = 1; i <= 50; i++) {
+        int startSlot = (page - 1) * 50 + 1;
+        int endSlot = page * 50;
+
+        for (int i = startSlot; i <= endSlot; i++) {
             final int slot = i;
             if (hasSlotPermission(player, slot)) {
                 HomeManager.Home home = getHomeAtSlot(homes, slot);
@@ -76,7 +80,7 @@ public class DialogManager {
                 } else {
                     // Empty, unlocked slot
                     buttons.add(ActionButton.create(
-                            Component.text("New Home", NamedTextColor.GRAY),
+                            Component.text("New Home (" + slot + ")", NamedTextColor.GRAY),
                             Component.text("Click to set a home here"),
                             90,
                             DialogAction.customClick(
@@ -88,7 +92,7 @@ public class DialogManager {
             } else {
                 // Locked slot (beyond this player's permission)
                 buttons.add(ActionButton.create(
-                        Component.text("Locked 🔒", NamedTextColor.RED),
+                        Component.text("Locked 🔒 (" + slot + ")", NamedTextColor.RED),
                         Component.text("No permission for slot " + slot),
                         90,
                         DialogAction.customClick(
@@ -101,12 +105,38 @@ public class DialogManager {
             }
         }
 
+        List<ActionButton> extraButtons = new ArrayList<>();
+        final int currentPage = page;
+        if (page > 1) {
+            extraButtons.add(ActionButton.create(
+                    Component.text("◀ Prev Page", NamedTextColor.YELLOW),
+                    Component.text("Go to page " + (page - 1)),
+                    120,
+                    DialogAction.customClick(
+                            (response, audience) -> openHomeGrid(player, currentPage - 1),
+                            ClickCallback.Options.builder().build()
+                    )
+            ));
+        }
+
+        extraButtons.add(ActionButton.create(
+                Component.text("Next Page ▶", NamedTextColor.YELLOW),
+                Component.text("Go to page " + (page + 1)),
+                120,
+                DialogAction.customClick(
+                        (response, audience) -> openHomeGrid(player, currentPage + 1),
+                        ClickCallback.Options.builder().build()
+                )
+        ));
+
+        ActionButton[] extraButtonsArray = extraButtons.toArray(new ActionButton[0]);
+
         Dialog dialog = Dialog.create(factory -> factory.empty()
-                .base(DialogBase.builder(Component.text("Homes"))
+                .base(DialogBase.builder(Component.text("Homes - Page " + currentPage))
                         .body(List.of(DialogBody.plainMessage(
                                 Component.text("Select a home, or set a new one."))))
                         .build())
-                .type(DialogType.multiAction(buttons, buildBackButton(player), 6))
+                .type(DialogType.multiAction(buttons, buildBackButton(player), 6, extraButtonsArray))
         );
 
         player.showDialog(dialog);
@@ -167,9 +197,19 @@ public class DialogManager {
                 )
         );
 
+        long x = Math.round(home.getX());
+        long y = Math.round(home.getY());
+        long z = Math.round(home.getZ());
+
         Dialog dialog = Dialog.create(factory -> factory.empty()
                 .base(DialogBase.builder(Component.text(home.getName()))
-                        .body(List.of(DialogBody.item(iconForHome(home), 32, 32, true, true)))
+                        .body(List.of(
+                                DialogBody.item(iconForHome(home), 32, 32, true, true),
+                                DialogBody.plainMessage(Component.text(
+                                        "World: " + home.getWorldName() + " | Coords: " + x + ", " + y + ", " + z,
+                                        NamedTextColor.GRAY
+                                ))
+                        ))
                         .build())
                 .type(DialogType.multiAction(
                         List.of(teleportBtn, changeIconBtn, renameBtn, deleteBtn),
