@@ -1,9 +1,9 @@
 name: ButtonHome
-version: 1.0.0
+version: 2.0.0
 main: com.buttonhome.ButtonHome
 api-version: '1.21'
 author: MinePluginCreator
-description: A highly-customizable chat-button-based home system for Paper servers (Supports Paper 1.21.x - 26.1.2x).
+description: A native Dialog-based home system for Paper servers (Paper 1.21.6+ required for Dialogs).
 commands:
   home:
     description: Open the homes button menu or jump straight to Stage 2 for a home.
