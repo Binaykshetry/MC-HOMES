@@ -24,6 +24,38 @@ public final class ButtonHome extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // 0. Server version check (Requires Paper 1.21.6+)
+        String rawVersion = getServer().getBukkitVersion();
+        boolean isUnderRequired = false;
+        try {
+            String versionPart = rawVersion.split("-")[0];
+            String[] parts = versionPart.split("\\.");
+            if (parts.length >= 2) {
+                int major = Integer.parseInt(parts[0]);
+                int minor = Integer.parseInt(parts[1]);
+                int patch = parts.length >= 3 ? Integer.parseInt(parts[2]) : 0;
+                
+                if (major < 1 || (major == 1 && minor < 21) || (major == 1 && minor == 21 && patch < 6)) {
+                    isUnderRequired = true;
+                }
+            }
+        } catch (Exception e) {
+            try {
+                Class.forName("io.papermc.paper.dialog.Dialog");
+            } catch (ClassNotFoundException ex) {
+                isUnderRequired = true;
+            }
+        }
+
+        if (isUnderRequired) {
+            getLogger().warning("====================================================================");
+            getLogger().warning("WARNING: ButtonHome 2.0.0 requires Paper 1.21.6 or higher!");
+            getLogger().warning("Running version: " + rawVersion);
+            getLogger().warning("Dialog-based GUIs and menus will fail to open on this version.");
+            getLogger().warning("Please update your server jar to Paper 1.21.6+.");
+            getLogger().warning("====================================================================");
+        }
+
         // 1. Save default config
         saveDefaultConfig();
 
