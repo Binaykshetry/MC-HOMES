@@ -3,14 +3,15 @@ name: Build ButtonHome Plugin
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch:
+  pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Source Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 21
@@ -21,11 +22,20 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        working-directory: ButtonHome
-        run: mvn -B clean package
+        run: |
+          if [ -d "ButtonHome" ]; then
+            echo "Found ButtonHome directory, building inside ButtonHome..."
+            cd ButtonHome
+            mvn clean package
+          else
+            echo "ButtonHome directory not found, building at repository root..."
+            mvn clean package
+          fi
 
-      - name: Upload Compiled Plugin Jar
+      - name: Upload Plugin Jar Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ButtonHome-Plugin
-          path: ButtonHome/target/ButtonHome-*.jar
+          path: |
+            ButtonHome/target/*.jar
+            target/*.jar
