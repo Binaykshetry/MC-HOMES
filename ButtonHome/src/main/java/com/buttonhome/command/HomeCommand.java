@@ -50,11 +50,7 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
                         page = 1;
                     }
                 }
-                if (plugin.isGeyserEnabled() && plugin.getGeyserFormHandler().isBedrock(player)) {
-                    plugin.getGeyserFormHandler().openHomeGrid(player);
-                } else {
-                    plugin.getDialogManager().openHomeGrid(player, page);
-                }
+                plugin.getDialogManager().openHomeGrid(player, page);
             }
             return true;
         }
@@ -69,20 +65,12 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
             }
 
             // Trigger Stage 2
-            if (plugin.isGeyserEnabled() && plugin.getGeyserFormHandler().isBedrock(player)) {
-                plugin.getGeyserFormHandler().openManageHome(player, home);
-            } else {
-                plugin.getDialogManager().openManageHome(player, home);
-            }
+            plugin.getDialogManager().openManageHome(player, home);
             return true;
         }
 
         // /home with no arguments (Stage 1 compact menu)
-        if (plugin.isGeyserEnabled() && plugin.getGeyserFormHandler().isBedrock(player)) {
-            plugin.getGeyserFormHandler().openHomeGrid(player);
-        } else {
-            plugin.getDialogManager().openHomeGrid(player, 1);
-        }
+        plugin.getDialogManager().openHomeGrid(player, 1);
         return true;
     }
 
