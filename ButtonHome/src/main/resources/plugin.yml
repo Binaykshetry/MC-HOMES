@@ -1,7 +1,7 @@
 name: ButtonHome
 version: 2.0.0
 main: com.buttonhome.ButtonHome
-api-version: '1.21'
+api-version: '1.21.8'
 author: MinePluginCreator
 description: A native Dialog-based home system for Paper servers (Paper 1.21.6+ required for Dialogs).
 commands:
