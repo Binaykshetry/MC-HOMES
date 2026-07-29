@@ -21,6 +21,7 @@ public final class ButtonHome extends JavaPlugin {
     private HomeManager homeManager;
     private TeleportManager teleportManager;
     private com.buttonhome.manager.DialogManager dialogManager;
+    private Object geyserFormHandler;
 
     @Override
     public void onEnable() {
@@ -63,6 +64,15 @@ public final class ButtonHome extends JavaPlugin {
         this.homeManager = new HomeManager(this);
         this.teleportManager = new TeleportManager(this);
         this.dialogManager = new com.buttonhome.manager.DialogManager(this);
+
+        if (getServer().getPluginManager().isPluginEnabled("Geyser-Spigot")) {
+            try {
+                this.geyserFormHandler = new com.buttonhome.manager.GeyserFormHandler(this);
+                getLogger().info("Geyser-Spigot detected! Registered Bedrock Form UI handler.");
+            } catch (Throwable e) {
+                getLogger().warning("Failed to initialize Geyser Bedrock Form UI support: " + e.getMessage());
+            }
+        }
 
         // 3. Register Listener
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -110,6 +120,14 @@ public final class ButtonHome extends JavaPlugin {
 
     public com.buttonhome.manager.DialogManager getDialogManager() {
         return dialogManager;
+    }
+
+    public boolean isGeyserEnabled() {
+        return geyserFormHandler != null;
+    }
+
+    public com.buttonhome.manager.GeyserFormHandler getGeyserFormHandler() {
+        return (com.buttonhome.manager.GeyserFormHandler) geyserFormHandler;
     }
 
     /**
