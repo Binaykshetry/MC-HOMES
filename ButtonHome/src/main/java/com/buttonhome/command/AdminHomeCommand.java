@@ -96,49 +96,8 @@ public class AdminHomeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        renderAdminStage1Menu(admin, targetName, homes);
+        plugin.getDialogManager().openAdminHomeGrid(admin, targetName, targetUuid, homes);
         return true;
-    }
-
-    private void renderAdminStage1Menu(Player admin, String targetName, List<HomeManager.Home> homes) {
-        List<Component> elements = new ArrayList<>();
-
-        for (int i = 0; i < homes.size(); i++) {
-            HomeManager.Home home = homes.get(i);
-            String x = String.valueOf((int) home.getX());
-            String y = String.valueOf((int) home.getY());
-            String z = String.valueOf((int) home.getZ());
-
-            // Button template for admin teleport
-            String template = "<hover:show_text:'<gray>World: <white>%world%</white><br>Coordinates: <white>%x%, %y%, %z%</white><br><yellow>Click to teleport to %player%\\'s home</yellow>'><click:run_command:'/adminhome %player% %home%'><dark_gray>[</dark_gray><gold>■ %home%</gold><dark_gray>]</dark_gray></click></hover>";
-
-            Component button = plugin.parseMiniMessage(template
-                    .replace("%player%", targetName)
-                    .replace("%home%", home.getName())
-                    .replace("%world%", home.getWorldName())
-                    .replace("%x%", x)
-                    .replace("%y%", y)
-                    .replace("%z%", z), null);
-            elements.add(button);
-        }
-
-        // Render Header
-        admin.sendMessage(plugin.parseMiniMessage("<gold>✦ <bold>" + targetName.toUpperCase() + "'S HOMES</bold> ✦</gold>", null));
-        admin.sendMessage(plugin.parseMiniMessage("<dark_gray>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬</dark_gray>", null));
-
-        // Render rows of 6
-        TextComponent.Builder rowBuilder = Component.text();
-        for (int i = 0; i < elements.size(); i++) {
-            rowBuilder.append(elements.get(i));
-
-            boolean isLastInRow = ((i + 1) % 6 == 0) || (i == elements.size() - 1);
-            if (!isLastInRow) {
-                rowBuilder.append(Component.text("  "));
-            } else {
-                admin.sendMessage(rowBuilder.build());
-                rowBuilder = Component.text();
-            }
-        }
     }
 
     @Override
