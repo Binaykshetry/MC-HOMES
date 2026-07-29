@@ -214,7 +214,7 @@ public class DialogManager implements Listener {
         ItemStack iconItem = new ItemStack(mat);
 
         DialogBase base = DialogBase.builder(title)
-            .body(List.of(DialogBody.item(iconItem), DialogBody.plainMessage(coordsLine)))
+            .body(List.of(DialogBody.item(iconItem).build(), DialogBody.plainMessage(coordsLine)))
             .canCloseWithEscape(true)
             .build();
 
