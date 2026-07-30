@@ -75,6 +75,7 @@ public class DialogManager implements Listener {
                     Map<String, String> placeholders = Map.of(
                         "%home%", home.getName(),
                         "%world%", home.getWorldName(),
+                        "%icon%", getEmojiForMaterial(home.getIconMaterial()),
                         "%x%", String.valueOf(Math.round(home.getX())),
                         "%y%", String.valueOf(Math.round(home.getY())),
                         "%z%", String.valueOf(Math.round(home.getZ()))
@@ -133,11 +134,10 @@ public class DialogManager implements Listener {
         }
 
         int prevPage = page - 1;
-        ActionButton backButton = null;
         if (page > 1) {
-            backButton = ActionButton.create(
-                plugin.parseMiniMessage("<yellow><- Previous Page</yellow>", null),
-                plugin.parseMiniMessage("Return to page " + prevPage, null),
+            buttons.add(ActionButton.create(
+                plugin.parseMiniMessage(plugin.getConfig().getString("gui.items.prev-page.name", "<yellow>◀ Previous Page</yellow>"), null),
+                getTooltipFromConfig("gui.items.prev-page.lore", null),
                 100,
                 DialogAction.customClick((response, audience) -> {
                     if (!(audience instanceof Player p)) return;
@@ -145,15 +145,15 @@ public class DialogManager implements Listener {
                         openHomeGrid(p, prevPage);
                     });
                 }, ClickCallback.Options.builder().build())
-            );
+            ));
         }
 
         boolean hasMore = (page * slotsPerPage) < 50;
         int nextPage = page + 1;
         if (hasMore) {
             buttons.add(ActionButton.create(
-                plugin.parseMiniMessage("<yellow>Next Page -></yellow>", null),
-                plugin.parseMiniMessage("Advance to page " + nextPage, null),
+                plugin.parseMiniMessage(plugin.getConfig().getString("gui.items.next-page.name", "<yellow>Next Page ▶</yellow>"), null),
+                getTooltipFromConfig("gui.items.next-page.lore", null),
                 100,
                 DialogAction.customClick((response, audience) -> {
                     if (!(audience instanceof Player p)) return;
@@ -163,6 +163,13 @@ public class DialogManager implements Listener {
                 }, ClickCallback.Options.builder().build())
             ));
         }
+
+        ActionButton backButton = ActionButton.create(
+            plugin.parseMiniMessage(plugin.getConfig().getString("gui.items.exit.name", "<red>❌ Exit</red>"), null),
+            getTooltipFromConfig("gui.items.exit.lore", null),
+            100,
+            DialogAction.customClick((response, audience) -> {}, ClickCallback.Options.builder().build())
+        );
 
         DialogType type = DialogType.multiAction(buttons, backButton, 3);
 
@@ -205,16 +212,13 @@ public class DialogManager implements Listener {
         titleStr = titleStr.replace("%home%", home.getName());
         Component title = plugin.parseMiniMessage(titleStr, null);
 
-        String coords = home.getWorldName() + " (" + Math.round(home.getX()) + ", " + Math.round(home.getY()) + ", " + Math.round(home.getZ()) + ")";
-        Component coordsLine = plugin.parseMiniMessage("<gray>" + coords + "</gray>", null);
-
         String iconMatStr = home.getIconMaterial();
         Material mat = Material.matchMaterial(iconMatStr);
         if (mat == null) mat = Material.LIME_BED;
         ItemStack iconItem = new ItemStack(mat);
 
         DialogBase base = DialogBase.builder(title)
-            .body(List.of(DialogBody.item(iconItem).build(), DialogBody.plainMessage(coordsLine)))
+            .body(List.of(DialogBody.item(iconItem).build()))
             .canCloseWithEscape(true)
             .build();
 
@@ -266,6 +270,13 @@ public class DialogManager implements Listener {
                     openConfirmDelete(p, home);
                 });
             }, ClickCallback.Options.builder().build())
+        ));
+
+        buttons.add(ActionButton.create(
+            plugin.parseMiniMessage(plugin.getConfig().getString("gui.items.exit.name", "<red>❌ Exit</red>"), null),
+            getTooltipFromConfig("gui.items.exit.lore", null),
+            100,
+            DialogAction.customClick((response, audience) -> {}, ClickCallback.Options.builder().build())
         ));
 
         ActionButton backButton = ActionButton.create(
@@ -569,6 +580,13 @@ public class DialogManager implements Listener {
             ));
         }
 
+        buttons.add(ActionButton.create(
+            plugin.parseMiniMessage(plugin.getConfig().getString("gui.items.exit.name", "<red>❌ Exit</red>"), null),
+            getTooltipFromConfig("gui.items.exit.lore", null),
+            100,
+            DialogAction.customClick((response, audience) -> {}, ClickCallback.Options.builder().build())
+        ));
+
         // Add back button
         ActionButton backButton = ActionButton.create(
             plugin.parseMiniMessage(plugin.getConfig().getString("gui.items.back.name", "<gray>Back</gray>"), null),
@@ -648,6 +666,7 @@ public class DialogManager implements Listener {
             Map<String, String> placeholders = Map.of(
                 "%home%", home.getName(),
                 "%world%", home.getWorldName(),
+                "%icon%", getEmojiForMaterial(home.getIconMaterial()),
                 "%x%", String.valueOf(Math.round(home.getX())),
                 "%y%", String.valueOf(Math.round(home.getY())),
                 "%z%", String.valueOf(Math.round(home.getZ()))
@@ -695,5 +714,61 @@ public class DialogManager implements Listener {
               .append(" ");
         }
         return sb.toString().trim();
+    }
+
+    private static final Map<String, String> MATERIAL_EMOJI_MAP = new HashMap<>();
+    static {
+        MATERIAL_EMOJI_MAP.put("LIME_BED", "🛏️");
+        MATERIAL_EMOJI_MAP.put("RED_BED", "🛏️");
+        MATERIAL_EMOJI_MAP.put("COMPASS", "🧭");
+        MATERIAL_EMOJI_MAP.put("RECOVERY_COMPASS", "🧭");
+        MATERIAL_EMOJI_MAP.put("WRITTEN_BOOK", "📖");
+        MATERIAL_EMOJI_MAP.put("BOOK", "📖");
+        MATERIAL_EMOJI_MAP.put("MAP", "🗺️");
+        MATERIAL_EMOJI_MAP.put("FILLED_MAP", "🗺️");
+        MATERIAL_EMOJI_MAP.put("OAK_SIGN", "🪧");
+        MATERIAL_EMOJI_MAP.put("OAK_DOOR", "🚪");
+        MATERIAL_EMOJI_MAP.put("IRON_DOOR", "🚪");
+        MATERIAL_EMOJI_MAP.put("GRASS_BLOCK", "🌱");
+        MATERIAL_EMOJI_MAP.put("CHEST", "📦");
+        MATERIAL_EMOJI_MAP.put("ENDER_CHEST", "🔮");
+        MATERIAL_EMOJI_MAP.put("CRAFTING_TABLE", "🛠️");
+        MATERIAL_EMOJI_MAP.put("FURNACE", "🔥");
+        MATERIAL_EMOJI_MAP.put("DIAMOND", "💎");
+        MATERIAL_EMOJI_MAP.put("EMERALD", "💚");
+        MATERIAL_EMOJI_MAP.put("GOLD_INGOT", "🟡");
+        MATERIAL_EMOJI_MAP.put("IRON_INGOT", "⚪");
+        MATERIAL_EMOJI_MAP.put("COAL", "⚫");
+        MATERIAL_EMOJI_MAP.put("REDSTONE", "🔴");
+        MATERIAL_EMOJI_MAP.put("LAPIS_LAZULI", "🔵");
+        MATERIAL_EMOJI_MAP.put("AMETHYST_SHARD", "💜");
+        MATERIAL_EMOJI_MAP.put("ENDER_PEARL", "🧿");
+        MATERIAL_EMOJI_MAP.put("EYE_OF_ENDER", "👁️");
+        MATERIAL_EMOJI_MAP.put("BLAZE_ROD", "🥢");
+        MATERIAL_EMOJI_MAP.put("NETHER_STAR", "⭐");
+        MATERIAL_EMOJI_MAP.put("BEACON", "💈");
+        MATERIAL_EMOJI_MAP.put("DIAMOND_SWORD", "⚔️");
+        MATERIAL_EMOJI_MAP.put("NETHERITE_SWORD", "⚔️");
+        MATERIAL_EMOJI_MAP.put("BOW", "🏹");
+        MATERIAL_EMOJI_MAP.put("SHIELD", "🛡️");
+        MATERIAL_EMOJI_MAP.put("GOLDEN_APPLE", "🍎");
+        MATERIAL_EMOJI_MAP.put("ENCHANTED_GOLDEN_APPLE", "🍏");
+        MATERIAL_EMOJI_MAP.put("TOTEM_OF_UNDYING", "🧸");
+        MATERIAL_EMOJI_MAP.put("SADDLE", "🏇");
+        MATERIAL_EMOJI_MAP.put("MINECART", "🛒");
+        MATERIAL_EMOJI_MAP.put("ELYTRA", "🦋");
+        MATERIAL_EMOJI_MAP.put("SPYGLASS", "🔭");
+        MATERIAL_EMOJI_MAP.put("CLOCK", "⏰");
+        MATERIAL_EMOJI_MAP.put("CAMPFIRE", "⛺");
+        MATERIAL_EMOJI_MAP.put("TORCH", "🔦");
+        MATERIAL_EMOJI_MAP.put("LANTERN", "🏮");
+        MATERIAL_EMOJI_MAP.put("GLOWSTONE", "🌟");
+        MATERIAL_EMOJI_MAP.put("WATER_BUCKET", "💧");
+        MATERIAL_EMOJI_MAP.put("LAVA_BUCKET", "🌋");
+    }
+
+    private String getEmojiForMaterial(String materialName) {
+        if (materialName == null) return "🛏️";
+        return MATERIAL_EMOJI_MAP.getOrDefault(materialName.toUpperCase(), "🛏️");
     }
 }

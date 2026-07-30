@@ -3,6 +3,7 @@ package com.buttonhome.manager;
 import com.buttonhome.ButtonHome;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -91,22 +92,36 @@ public class TeleportManager {
         // 4. Register block-level origin location
         Location originBlock = player.getLocation().getBlock().getLocation();
 
-        // 5. Send starting message
-        plugin.sendConfigMessage(player, "messages.warmup-start", Map.of(
-                "%home%", homeName,
-                "%seconds%", String.valueOf(warmupSeconds)
-        ));
+        // 5. Schedule repeating task to tick down every second and display in the action bar
+        BukkitTask task = new BukkitRunnable() {
+            int remaining = warmupSeconds;
 
-        // 6. Schedule task
-        BukkitTask task = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            PendingTeleport pending = pendingTeleports.remove(uuid);
-            if (pending != null) {
-                // Ensure player is online and valid
-                if (player.isOnline()) {
-                    executeTeleportDirectly(player, pending.getHomeName(), pending.getDestination());
+            @Override
+            public void run() {
+                if (!player.isOnline()) {
+                    cancel();
+                    pendingTeleports.remove(uuid);
+                    return;
                 }
+
+                if (remaining <= 0) {
+                    cancel();
+                    PendingTeleport pending = pendingTeleports.remove(uuid);
+                    if (pending != null) {
+                        executeTeleportDirectly(player, pending.getHomeName(), pending.getDestination());
+                    }
+                    return;
+                }
+
+                // Send action bar message with countdown
+                plugin.sendConfigActionBar(player, "messages.warmup-start", Map.of(
+                        "%home%", homeName,
+                        "%seconds%", String.valueOf(remaining)
+                ));
+
+                remaining--;
             }
-        }, warmupSeconds * 20L);
+        }.runTaskTimer(plugin, 0L, 20L);
 
         pendingTeleports.put(uuid, new PendingTeleport(homeName, originBlock, destination, task));
     }
@@ -115,9 +130,19 @@ public class TeleportManager {
      * Execute the teleportation immediately, update cooldown on success.
      */
     private void executeTeleportDirectly(Player player, String homeName, Location destination) {
+        Location origin = player.getLocation();
         // Use teleportAsync for optimized Paper async teleportation
         player.teleportAsync(destination).thenAccept(success -> {
             if (success) {
+                if (origin != null && origin.getWorld() != null) {
+                    origin.getWorld().playSound(origin, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+                    origin.getWorld().spawnParticle(org.bukkit.Particle.PORTAL, origin, 30, 0.5, 1.0, 0.5, 0.1);
+                }
+                if (destination != null && destination.getWorld() != null) {
+                    destination.getWorld().playSound(destination, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+                    destination.getWorld().spawnParticle(org.bukkit.Particle.PORTAL, destination, 30, 0.5, 1.0, 0.5, 0.1);
+                }
+
                 plugin.sendConfigMessage(player, "messages.teleport-success", Map.of("%home%", homeName));
 
                 // Apply cooldown if not admin
