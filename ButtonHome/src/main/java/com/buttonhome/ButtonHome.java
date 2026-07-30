@@ -167,6 +167,28 @@ public final class ButtonHome extends JavaPlugin {
     }
 
     /**
+     * Send a MiniMessage-formatted config message to the player's action bar.
+     */
+    public void sendConfigActionBar(Player player, String path, Map<String, String> placeholders) {
+        String raw = getConfig().getString(path);
+        if (raw == null || raw.isEmpty()) {
+            return;
+        }
+
+        if (placeholders != null) {
+            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+                raw = raw.replace(entry.getKey(), entry.getValue());
+            }
+        }
+
+        raw = translateAlternateColorCodes(raw);
+
+        // Deserialize using Adventure's MiniMessage
+        Component message = MiniMessage.miniMessage().deserialize(raw);
+        player.sendActionBar(message);
+    }
+
+    /**
      * Parse and deserialize a single raw MiniMessage string directly.
      */
     public Component parseMiniMessage(String raw, Map<String, String> placeholders) {
