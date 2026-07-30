@@ -1,7 +1,7 @@
 name: ButtonHome
 version: 2.0.0
 main: com.buttonhome.ButtonHome
-api-version: '1.21.8'
+api-version: '1.21'
 author: MinePluginCreator
 description: A native Dialog-based home system for Paper servers (Paper 1.21.6+ required for Dialogs).
 commands:
@@ -51,3 +51,303 @@ permissions:
   buttonhome.admin:
     description: Legacy permission node for administrative command access.
     default: op
+  buttonhome.1:
+    description: Sets the home limit to 1
+    default: false
+  buttonhome.2:
+    description: Sets the home limit to 2
+    default: false
+  buttonhome.3:
+    description: Sets the home limit to 3
+    default: false
+  buttonhome.4:
+    description: Sets the home limit to 4
+    default: false
+  buttonhome.5:
+    description: Sets the home limit to 5
+    default: false
+  buttonhome.6:
+    description: Sets the home limit to 6
+    default: false
+  buttonhome.7:
+    description: Sets the home limit to 7
+    default: false
+  buttonhome.8:
+    description: Sets the home limit to 8
+    default: false
+  buttonhome.9:
+    description: Sets the home limit to 9
+    default: false
+  buttonhome.10:
+    description: Sets the home limit to 10
+    default: false
+  buttonhome.11:
+    description: Sets the home limit to 11
+    default: false
+  buttonhome.12:
+    description: Sets the home limit to 12
+    default: false
+  buttonhome.13:
+    description: Sets the home limit to 13
+    default: false
+  buttonhome.14:
+    description: Sets the home limit to 14
+    default: false
+  buttonhome.15:
+    description: Sets the home limit to 15
+    default: false
+  buttonhome.16:
+    description: Sets the home limit to 16
+    default: false
+  buttonhome.17:
+    description: Sets the home limit to 17
+    default: false
+  buttonhome.18:
+    description: Sets the home limit to 18
+    default: false
+  buttonhome.19:
+    description: Sets the home limit to 19
+    default: false
+  buttonhome.20:
+    description: Sets the home limit to 20
+    default: false
+  buttonhome.21:
+    description: Sets the home limit to 21
+    default: false
+  buttonhome.22:
+    description: Sets the home limit to 22
+    default: false
+  buttonhome.23:
+    description: Sets the home limit to 23
+    default: false
+  buttonhome.24:
+    description: Sets the home limit to 24
+    default: false
+  buttonhome.25:
+    description: Sets the home limit to 25
+    default: false
+  buttonhome.26:
+    description: Sets the home limit to 26
+    default: false
+  buttonhome.27:
+    description: Sets the home limit to 27
+    default: false
+  buttonhome.28:
+    description: Sets the home limit to 28
+    default: false
+  buttonhome.29:
+    description: Sets the home limit to 29
+    default: false
+  buttonhome.30:
+    description: Sets the home limit to 30
+    default: false
+  buttonhome.31:
+    description: Sets the home limit to 31
+    default: false
+  buttonhome.32:
+    description: Sets the home limit to 32
+    default: false
+  buttonhome.33:
+    description: Sets the home limit to 33
+    default: false
+  buttonhome.34:
+    description: Sets the home limit to 34
+    default: false
+  buttonhome.35:
+    description: Sets the home limit to 35
+    default: false
+  buttonhome.36:
+    description: Sets the home limit to 36
+    default: false
+  buttonhome.37:
+    description: Sets the home limit to 37
+    default: false
+  buttonhome.38:
+    description: Sets the home limit to 38
+    default: false
+  buttonhome.39:
+    description: Sets the home limit to 39
+    default: false
+  buttonhome.40:
+    description: Sets the home limit to 40
+    default: false
+  buttonhome.41:
+    description: Sets the home limit to 41
+    default: false
+  buttonhome.42:
+    description: Sets the home limit to 42
+    default: false
+  buttonhome.43:
+    description: Sets the home limit to 43
+    default: false
+  buttonhome.44:
+    description: Sets the home limit to 44
+    default: false
+  buttonhome.45:
+    description: Sets the home limit to 45
+    default: false
+  buttonhome.46:
+    description: Sets the home limit to 46
+    default: false
+  buttonhome.47:
+    description: Sets the home limit to 47
+    default: false
+  buttonhome.48:
+    description: Sets the home limit to 48
+    default: false
+  buttonhome.49:
+    description: Sets the home limit to 49
+    default: false
+  buttonhome.50:
+    description: Sets the home limit to 50
+    default: false
+  buttonhome.limit.1:
+    description: Sets the home limit fallback to 1
+    default: false
+  buttonhome.limit.2:
+    description: Sets the home limit fallback to 2
+    default: false
+  buttonhome.limit.3:
+    description: Sets the home limit fallback to 3
+    default: false
+  buttonhome.limit.4:
+    description: Sets the home limit fallback to 4
+    default: false
+  buttonhome.limit.5:
+    description: Sets the home limit fallback to 5
+    default: false
+  buttonhome.limit.6:
+    description: Sets the home limit fallback to 6
+    default: false
+  buttonhome.limit.7:
+    description: Sets the home limit fallback to 7
+    default: false
+  buttonhome.limit.8:
+    description: Sets the home limit fallback to 8
+    default: false
+  buttonhome.limit.9:
+    description: Sets the home limit fallback to 9
+    default: false
+  buttonhome.limit.10:
+    description: Sets the home limit fallback to 10
+    default: false
+  buttonhome.limit.11:
+    description: Sets the home limit fallback to 11
+    default: false
+  buttonhome.limit.12:
+    description: Sets the home limit fallback to 12
+    default: false
+  buttonhome.limit.13:
+    description: Sets the home limit fallback to 13
+    default: false
+  buttonhome.limit.14:
+    description: Sets the home limit fallback to 14
+    default: false
+  buttonhome.limit.15:
+    description: Sets the home limit fallback to 15
+    default: false
+  buttonhome.limit.16:
+    description: Sets the home limit fallback to 16
+    default: false
+  buttonhome.limit.17:
+    description: Sets the home limit fallback to 17
+    default: false
+  buttonhome.limit.18:
+    description: Sets the home limit fallback to 18
+    default: false
+  buttonhome.limit.19:
+    description: Sets the home limit fallback to 19
+    default: false
+  buttonhome.limit.20:
+    description: Sets the home limit fallback to 20
+    default: false
+  buttonhome.limit.21:
+    description: Sets the home limit fallback to 21
+    default: false
+  buttonhome.limit.22:
+    description: Sets the home limit fallback to 22
+    default: false
+  buttonhome.limit.23:
+    description: Sets the home limit fallback to 23
+    default: false
+  buttonhome.limit.24:
+    description: Sets the home limit fallback to 24
+    default: false
+  buttonhome.limit.25:
+    description: Sets the home limit fallback to 25
+    default: false
+  buttonhome.limit.26:
+    description: Sets the home limit fallback to 26
+    default: false
+  buttonhome.limit.27:
+    description: Sets the home limit fallback to 27
+    default: false
+  buttonhome.limit.28:
+    description: Sets the home limit fallback to 28
+    default: false
+  buttonhome.limit.29:
+    description: Sets the home limit fallback to 29
+    default: false
+  buttonhome.limit.30:
+    description: Sets the home limit fallback to 30
+    default: false
+  buttonhome.limit.31:
+    description: Sets the home limit fallback to 31
+    default: false
+  buttonhome.limit.32:
+    description: Sets the home limit fallback to 32
+    default: false
+  buttonhome.limit.33:
+    description: Sets the home limit fallback to 33
+    default: false
+  buttonhome.limit.34:
+    description: Sets the home limit fallback to 34
+    default: false
+  buttonhome.limit.35:
+    description: Sets the home limit fallback to 35
+    default: false
+  buttonhome.limit.36:
+    description: Sets the home limit fallback to 36
+    default: false
+  buttonhome.limit.37:
+    description: Sets the home limit fallback to 37
+    default: false
+  buttonhome.limit.38:
+    description: Sets the home limit fallback to 38
+    default: false
+  buttonhome.limit.39:
+    description: Sets the home limit fallback to 39
+    default: false
+  buttonhome.limit.40:
+    description: Sets the home limit fallback to 40
+    default: false
+  buttonhome.limit.41:
+    description: Sets the home limit fallback to 41
+    default: false
+  buttonhome.limit.42:
+    description: Sets the home limit fallback to 42
+    default: false
+  buttonhome.limit.43:
+    description: Sets the home limit fallback to 43
+    default: false
+  buttonhome.limit.44:
+    description: Sets the home limit fallback to 44
+    default: false
+  buttonhome.limit.45:
+    description: Sets the home limit fallback to 45
+    default: false
+  buttonhome.limit.46:
+    description: Sets the home limit fallback to 46
+    default: false
+  buttonhome.limit.47:
+    description: Sets the home limit fallback to 47
+    default: false
+  buttonhome.limit.48:
+    description: Sets the home limit fallback to 48
+    default: false
+  buttonhome.limit.49:
+    description: Sets the home limit fallback to 49
+    default: false
+  buttonhome.limit.50:
+    description: Sets the home limit fallback to 50
+    default: false

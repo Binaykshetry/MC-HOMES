@@ -19,35 +19,35 @@ teleport-cooldown-seconds: 0
 
 # Player-facing messages (formatted with MiniMessage)
 messages:
-  menu-divider: "<dark_gray>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬</dark_gray>"
+  menu-divider: "<#4b5563>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬</#4b5563>"
   # General error messages
-  no-permission: "<red>You do not have permission to use this command!</red>"
-  player-only: "<red>Only players can use this command!</red>"
-  invalid-name: "<red>Invalid home name! Names must be 1-16 characters long and use only letters, numbers, hyphens, and underscores (e.g. [A-Za-z0-9_-]).</red>"
-  no-such-home: "<red>You don't have a home named <yellow>%home%</yellow>.</red>"
-  usage-hint: "<gray>Usage: %usage%</gray>"
+  no-permission: "<#ef4444>You do not have permission to use this command!</#ef4444>"
+  player-only: "<#ef4444>Only players can use this command!</#ef4444>"
+  invalid-name: "<#ef4444>Invalid home name! Names must be 1-16 characters long and use only letters, numbers, hyphens, and underscores (e.g. [A-Za-z0-9_-]).</#ef4444>"
+  no-such-home: "<#ef4444>You don't have a home named <#fbbf24>%home%</#fbbf24>.</#ef4444>"
+  usage-hint: "<#9ca3af>Usage: %usage%</#9ca3af>"
   
   # Home operations messages
-  home-set: "<green>Home <white>%home%</white> has been set at your current location!</green>"
-  home-deleted: "<red>Home <white>%home%</white> has been deleted.</red>"
-  home-already-exists: "<red>A home named <yellow>%home%</yellow> already exists!</red>"
-  limit-reached: "<red>You have reached your home limit of <yellow>%limit%</yellow>! Delete an existing home first.</red>"
+  home-set: "<#10b981>Home <#f9fafb>%home%</#f9fafb> has been set at your current location!</#10b981>"
+  home-deleted: "<#ef4444>Home <#f9fafb>%home%</#f9fafb> has been deleted.</#ef4444>"
+  home-already-exists: "<#ef4444>A home named <#fbbf24>%home%</#fbbf24> already exists!</#ef4444>"
+  limit-reached: "<#ef4444>You have reached your home limit of <#fbbf24>%limit%</#fbbf24>! Delete an existing home first.</#ef4444>"
   
   # Teleport status messages
-  warmup-start: "<gold>⏳ Teleporting to %home% in %seconds% seconds. Do not move or take damage!</gold>"
-  warmup-cancelled-move: "<red>✘ Teleport cancelled — you moved.</red>"
-  warmup-cancelled-damage: "<red>✘ Teleport cancelled — you took damage.</red>"
-  warmup-cancelled-manual: "<red>✘ Teleport cancelled.</red>"
-  warmup-nothing-pending: "<gray>You don't have a pending teleport.</gray>"
-  teleport-success: "<green>✔ Teleported to %home%.</green>"
-  on-cooldown: "<red>You must wait <yellow>%seconds%</yellow> more seconds before teleporting again.</red>"
-  world-not-loaded: "<red>✘ Teleport failed — the world <white>%world%</white> is not currently loaded.</red>"
+  warmup-start: "<#f59e0b>⏳ Teleporting to %home% in %seconds% seconds. Do not move or take damage!</#f59e0b>"
+  warmup-cancelled-move: "<#ef4444>✘ Teleport cancelled — you moved.</#ef4444>"
+  warmup-cancelled-damage: "<#ef4444>✘ Teleport cancelled — you took damage.</#ef4444>"
+  warmup-cancelled-manual: "<#ef4444>✘ Teleport cancelled.</#ef4444>"
+  warmup-nothing-pending: "<#9ca3af>You don't have a pending teleport.</#9ca3af>"
+  teleport-success: "<#10b981>✔ Teleported to %home%.</#10b981>"
+  on-cooldown: "<#ef4444>You must wait <#fbbf24>%seconds%</#fbbf24> more seconds before teleporting again.</#ef4444>"
+  world-not-loaded: "<#ef4444>✘ Teleport failed — the world <#f9fafb>%world%</#f9fafb> is not currently loaded.</#ef4444>"
 
   # Fallback plain homes list (e.g. for accessibility/compat)
-  plain-list-prefix: "<gold>Your homes (%count%/%limit%): </gold>"
+  plain-list-prefix: "<#f59e0b>Your homes (%count%/%limit%): </#f59e0b>"
 
-  locked-slot-clicked: "<red>This home slot is locked! Upgrade your rank or obtain permission <yellow>buttonhome.limit.%index%</yellow> to unlock more slots.</red>"
-  no-homes: "<gray>You have no homes yet! Use <yellow>/sethome <name></yellow> to save your location.</gray>"
+  locked-slot-clicked: "<#ef4444>This home slot is locked! Upgrade your rank or obtain permission <#fbbf24>buttonhome.limit.%index%</#fbbf24> to unlock more slots.</#ef4444>"
+  no-homes: "<#9ca3af>You have no homes yet! Use <#fbbf24>/sethome <name></#fbbf24> to save your location.</#no-homes>"
 
 # ==========================================
 # Native Dialogs UI Configuration
@@ -76,58 +76,61 @@ gui:
   # Interactive GUI Items configuration
   items:
     occupied:
-      name: "<white>■ %home%</white>"
+      name: "<#f9fafb>%icon% %home%</#f9fafb>"
       lore:
-        - "<gray>World: <white>%world%</white></gray>"
-        - "<gray>Location: <yellow>%x%, %y%, %z%</yellow></gray>"
+        - "<#9ca3af>World: <#f9fafb>%world%</#f9fafb></#9ca3af>"
         - ""
-        - "<yellow>⚡ Click to manage this home!</yellow>"
+        - "<#fbbf24>⚡ Click to manage this home!</#fbbf24>"
     new:
-      name: "<gray>New Home (%index%)</gray>"
+      name: "<#9ca3af>New Home (%index%)</#9ca3af>"
       lore:
-        - "<gray>Unused slot.</gray>"
+        - "<#9ca3af>Unused slot.</#9ca3af>"
         - ""
-        - "<green>✚ Click to save your current</green>"
-        - "<green>  location to this slot.</green>"
+        - "<#10b981>✚ Click to save your current</#10b981>"
+        - "<#10b981>  location to this slot.</#10b981>"
     locked:
-      name: "<red>🔒 Locked Slot %index%</red>"
+      name: "<#ef4444>🔒 Locked Slot %index%</#ef4444>"
       lore:
-        - "<gray>Obtain permission node</gray>"
-        - "<yellow>buttonhome.limit.%index%</yellow>"
-        - "<gray>or upgrade your server rank</gray>"
-        - "<gray>to unlock this home slot.</gray>"
+        - "<#9ca3af>Obtain permission node</#9ca3af>"
+        - "<#fbbf24>buttonhome.limit.%index%</#fbbf24>"
+        - "<#9ca3af>or upgrade your server rank</#9ca3af>"
+        - "<#9ca3af>to unlock this home slot.</#9ca3af>"
     teleport:
-      name: "<green>✔ TELEPORT</green>"
+      name: "<#10b981>✔ TELEPORT</#10b981>"
       lore:
-        - "<gray>Teleport safely to <white>%home%</white>.</gray>"
+        - "<#9ca3af>Teleport safely to <#f9fafb>%home%</#f9fafb>.</#9ca3af>"
         - ""
-        - "<yellow>⚡ Click to teleport</yellow>"
+        - "<#fbbf24>⚡ Click to teleport</#fbbf24>"
     delete:
-      name: "<red>❌ DELETE</red>"
+      name: "<#ef4444>❌ DELETE</#ef4444>"
       lore:
-        - "<gray>Permanently delete <white>%home%</white>.</gray>"
+        - "<#9ca3af>Permanently delete <#f9fafb>%home%</#f9fafb>.</#9ca3af>"
         - ""
-        - "<red>⚠️ This action is irreversible!</red>"
+        - "<#ef4444>⚠️ This action is irreversible!</#ef4444>"
     confirm-set:
-      name: "<green>✔ CONFIRM SETHOME</green>"
+      name: "<#10b981>✔ CONFIRM SETHOME</#10b981>"
       lore:
-        - "<gray>Save your current location</gray>"
-        - "<gray>as <white>%home%</white>.</gray>"
+        - "<#9ca3af>Save your current location</#9ca3af>"
+        - "<#9ca3af>as <#f9fafb>%home%</#f9fafb>.</#9ca3af>"
         - ""
-        - "<yellow>⚡ Click to save</yellow>"
+        - "<#fbbf24>⚡ Click to save</#fbbf24>"
     cancel:
-      name: "<red>✘ CANCEL</red>"
+      name: "<#ef4444>✘ CANCEL</#ef4444>"
       lore:
-        - "<gray>Go back to the homes list.</gray>"
+        - "<#9ca3af>Go back to the homes list.</#9ca3af>"
     back:
-      name: "<yellow>◀ Back to List</yellow>"
+      name: "<#fbbf24>◀ Back to List</#fbbf24>"
       lore:
-        - "<gray>Return to homes main grid.</gray>"
+        - "<#9ca3af>Return to homes main grid.</#9ca3af>"
+    exit:
+      name: "<#ef4444>❌ Exit</#ef4444>"
+      lore:
+        - "<#9ca3af>Close the homes interface.</#9ca3af>"
     prev-page:
-      name: "<yellow>◀ Previous Page</yellow>"
+      name: "<#fbbf24>◀ Previous Page</#fbbf24>"
       lore:
-        - "<gray>Go back one page.</gray>"
+        - "<#9ca3af>Go back one page.</#9ca3af>"
     next-page:
-      name: "<yellow>Next Page ▶</yellow>"
+      name: "<#fbbf24>Next Page ▶</#fbbf24>"
       lore:
-        - "<gray>View more home slots.</gray>"
+        - "<#9ca3af>View more home slots.</#9ca3af>"
